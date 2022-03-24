@@ -4,6 +4,6 @@ requires = [
     "wheel",
     "matplotlib",
     "numpy",
-    "opencv-python-headless==4.5.5.62"
+    "opencv-python-headless==4.5.4.60"
 ]
 build-backend = "setuptools.build_meta"
