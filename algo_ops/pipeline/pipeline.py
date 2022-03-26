@@ -120,7 +120,6 @@ class Pipeline(Op):
         print("---Profile---")
         for i, op_name in enumerate(self.ops.keys()):
             op = self.ops[op_name]
-            print(op)
             assert isinstance(op, Op)
             op.vis_profile()
         print(

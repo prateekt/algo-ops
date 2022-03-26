@@ -18,7 +18,7 @@ dependencies:
   - xz=5.2.5
   - zlib=1.2.11
   - pip:
-    - black==22.1.0
+    - black
     - bleach==4.1.0
     - build==0.7.0
     - charset-normalizer==2.0.12

@@ -1,3 +1,7 @@
+conda:
+	conda env remove -n algo_ops_env
+	conda env create -f conda.yaml
+
 build:
 	rm -rf dist
 	rm -rf build
