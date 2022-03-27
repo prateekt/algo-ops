@@ -6,7 +6,7 @@ You like algorithms. But prototyping complicated algorithms can be challenging, 
 Algo-Ops has the following features:
 
 * An algorithm is a recipe for executing a computation, generally consisting of several steps. In Algo-Ops, each step is an Op. 
-* Ops are automic units of an algorithm. Various Types of Ops are supported such as TextOps (for NLP) and CVOps (for computer vision). The user can easily add their own Ops.
+* Ops are automic units of an algorithm. Various types of Ops are supported such as TextOps (for NLP) and CVOps (for computer vision). The user can easily add their own Ops.
 * Ops are linked together to form an algorithm. They execute sequentially where the first Op's outputs are passed as the second Op's inputs. The feed-forward pipeline is run to execution.
 ```python
 pipeline = Pipeline.init_from_funcs(
