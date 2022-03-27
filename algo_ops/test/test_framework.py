@@ -48,8 +48,8 @@ class TestAlgoOpsFramework(unittest.TestCase):
         self.assertEqual(len(op.execution_times), 1)
 
         # test op pickle and recover state
-        op.to_pickle(out_file="test.pkl")
-        reloaded_op = TextOp.load_from_pickle(in_file="test.pkl")
+        op.to_pickle(out_pkl_path="test.pkl")
+        reloaded_op = TextOp.load_from_pickle(pkl_path="test.pkl")
         self.assertEqual(op.input, reloaded_op.input)
         self.assertEqual(op.output, reloaded_op.output)
         self.assertEqual(op.execution_times, reloaded_op.execution_times)
@@ -64,8 +64,8 @@ class TestAlgoOpsFramework(unittest.TestCase):
         self.assertEqual(len(op.execution_times), 2)
 
         # test op pickle and recover state
-        op.to_pickle(out_file="test.pkl")
-        reloaded_op = TextOp.load_from_pickle(in_file="test.pkl")
+        op.to_pickle(out_pkl_path="test.pkl")
+        reloaded_op = TextOp.load_from_pickle(pkl_path="test.pkl")
         self.assertEqual(op.input, reloaded_op.input)
         self.assertEqual(op.output, reloaded_op.output)
         self.assertEqual(op.execution_times, reloaded_op.execution_times)
@@ -112,7 +112,7 @@ class TestAlgoOpsFramework(unittest.TestCase):
                 self.assertEqual(op.output, pipeline.ops[op_names[i + 1]].input)
 
         # pickle pipeline state
-        pipeline.to_pickle(out_file="test.pkl")
+        pipeline.to_pickle(out_pkl_path="test.pkl")
 
         # test running pipeline again and check ops IO buffers post execution
         final_output = pipeline.exec(inp="a")
@@ -134,7 +134,7 @@ class TestAlgoOpsFramework(unittest.TestCase):
         pipeline.vis_profile()
 
         # test reloading pipeline after first and check reloaded pipeline
-        reloaded_pipeline = Pipeline.load_from_pickle(in_file="test.pkl")
+        reloaded_pipeline = Pipeline.load_from_pickle(pkl_path="test.pkl")
         assert isinstance(reloaded_pipeline, Pipeline)
         op_names = list(reloaded_pipeline.ops.keys())
         for i, op_name in enumerate(op_names):

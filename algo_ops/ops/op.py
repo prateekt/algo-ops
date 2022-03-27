@@ -1,7 +1,6 @@
 import collections
 import functools
 import os
-import pickle
 import time
 from abc import ABC, abstractmethod
 from typing import Callable, List, Any, Dict, Sequence, Optional, Tuple
@@ -9,9 +8,10 @@ from typing import Callable, List, Any, Dict, Sequence, Optional, Tuple
 import numpy as np
 
 import algo_ops.paraloop.paraloop as paraloop
+from algo_ops.pickleable_object.pickleable_object import PickleableObject
 
 
-class Op(ABC):
+class Op(ABC, PickleableObject):
     """
     Represents a single algorithm operation that can be executed. Inputs and outputs can be visualized.
     """
@@ -125,23 +125,6 @@ class Op(ABC):
             )
         )
 
-    def to_pickle(self, out_file: str) -> None:
-        """
-        Pickles current state of Op to file.
-        """
-        with open(out_file, "wb") as out:
-            pickle.dump(self, out)
-
-    @staticmethod
-    def load_from_pickle(in_file: str) -> "Op":
-        """
-        Loads op state from a pickle file.
-        """
-        with open(in_file, "rb") as inp:
-            op = pickle.load(inp)
-        assert isinstance(op, Op)
-        return op
-
     def _embedded_eval(self, inp: Any) -> Tuple[Any, bool]:
         """
         Helper function to embed evaluation and prediction in same function.
@@ -154,7 +137,7 @@ class Op(ABC):
             inp = inp.replace("/", "_")
         if not correct and self.incorrect_pkl_path is not None:
             outfile = os.path.join(self.incorrect_pkl_path, str(inp) + ".pkl")
-            self.to_pickle(out_file=outfile)
+            self.to_pickle(out_pkl_path=outfile)
         return result, correct
 
     def evaluate(
