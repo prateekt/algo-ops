@@ -27,8 +27,7 @@ class CVOp(Op):
         param img: Image to plot
         param title: Image title
         """
-        rgb_im = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        plt.imshow(rgb_im)
+        plt.imshow(img)
         plt.title(title)
 
     def vis_input(self) -> None:
@@ -78,6 +77,7 @@ class CVOp(Op):
         """
         if isinstance(inp, str):
             inp = cv2.imread(filename=inp)
+            inp = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
         if not isinstance(inp, np.ndarray):
             raise ValueError("Unsupported Input: " + str(inp))
         return super().exec(inp=inp)
