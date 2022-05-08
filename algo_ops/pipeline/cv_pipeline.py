@@ -1,5 +1,5 @@
 import math
-from typing import List, Callable
+from typing import List, Callable, Optional
 
 from matplotlib import pyplot as plt
 
@@ -15,11 +15,17 @@ class CVPipeline(Pipeline):
     """
 
     @classmethod
-    def init_from_funcs(cls, funcs: List[Callable], op_class=CVOp) -> "CVPipeline":
+    def init_from_funcs(
+        cls,
+        funcs: List[Callable],
+        op_class=CVOp,
+        profiling_figs_path: Optional[str] = "algo_ops_figs",
+    ) -> "CVPipeline":
         """
         param funcs: List of pipeline functions that execute serially
             as operations in pipeline.
         param op_class: The subclass of Op that the pipeline uses
+        param profiling_figs_path: The profiling figs path
         """
         assert op_class is CVOp, "Cannot use non-CVOp in CVPipeline."
         op_class = [op_class for _ in range(len(funcs))]
