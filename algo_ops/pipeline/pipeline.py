@@ -38,18 +38,23 @@ class Pipeline(Op):
             current_input = op.exec(inp=current_input)
         return current_input
 
-    def __init__(self, ops: List[Op], profiling_figs_path: Optional[str] = 'algo_ops_profile'):
+    def __init__(
+        self, ops: List[Op], profiling_figs_path: Optional[str] = "algo_ops_profile"
+    ):
         super().__init__(func=self._run)
         self.ops = OrderedDict()
         for i, op in enumerate(ops):
             assert isinstance(op, Op)
             self.ops[self._pipeline_op_name(op=op)] = op
         self.name = self._pipeline_name(pipeline_ops=self.ops.values())
+        self.profiling_figs_path = profiling_figs_path
 
     @classmethod
     def init_from_funcs(
-        cls, funcs: List[Callable], op_class: Union[Any, List[Any]],
-            profiling_figs_path: Optional[str] = 'algo_ops_profile'
+        cls,
+        funcs: List[Callable],
+        op_class: Union[Any, List[Any]],
+        profiling_figs_path: Optional[str] = "algo_ops_profile",
     ) -> "Pipeline":
         """
         param funcs: List of pipeline functions that execute serially

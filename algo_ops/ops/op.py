@@ -17,7 +17,9 @@ class Op(ABC, PickleableObject):
     Represents a single algorithm operation that can be executed. Inputs and outputs can be visualized.
     """
 
-    def __init__(self, func: Callable, profiling_figs_path: Optional[str] = 'algo_ops_profile'):
+    def __init__(
+        self, func: Callable, profiling_figs_path: Optional[str] = "algo_ops_profile"
+    ):
         """
         param func: The operation function
         """
