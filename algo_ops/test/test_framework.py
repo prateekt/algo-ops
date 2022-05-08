@@ -132,6 +132,19 @@ class TestAlgoOpsFramework(unittest.TestCase):
         # pipeline vis test
         pipeline.vis()
         pipeline.vis_profile()
+        fig_files = [
+            "['append_a', 'append_b', 'reverse', 'reverse']",
+            "['append_a', 'append_b', 'reverse', 'reverse']_violin",
+            "append_a",
+            "append_b",
+            "reverse",
+        ]
+        self.assertTrue(os.path.exists("algo_ops_profile"))
+        for fig_file in fig_files:
+            fig_path = os.path.join("algo_ops_profile", fig_file + ".png")
+            print(fig_path)
+            self.assertTrue(os.path.exists(fig_path))
+        shutil.rmtree("algo_ops_profile")
 
         # test reloading pipeline after first and check reloaded pipeline
         reloaded_pipeline = Pipeline.load_from_pickle(pkl_path="test.pkl")

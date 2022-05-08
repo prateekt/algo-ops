@@ -16,7 +16,7 @@ class TestPickleableObject(unittest.TestCase):
 
     def test_framework(self) -> None:
         test_obj = PklTestClass()
-        pkl_path = 'pkl1_test.pkl'
+        pkl_path = "pkl1_test.pkl"
         self.assertEqual(test_obj.a, 2)
         self.assertTrue(not os.path.exists(pkl_path))
         test_obj.to_pickle(out_pkl_path=pkl_path)
@@ -29,7 +29,7 @@ class TestPickleableObject(unittest.TestCase):
 
     def test_framework_vary_parameter(self) -> None:
         test_obj = PklTestClass(a=3)
-        pkl_path = 'pkl2_test.pkl'
+        pkl_path = "pkl2_test.pkl"
         self.assertEqual(test_obj.a, 3)
         self.assertTrue(not os.path.exists(pkl_path))
         test_obj.to_pickle(out_pkl_path=pkl_path)

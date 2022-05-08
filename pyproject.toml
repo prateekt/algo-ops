@@ -4,6 +4,7 @@ requires = [
     "wheel",
     "matplotlib",
     "numpy",
-    "opencv-python-headless==4.5.4.60"
+    "opencv-python-headless==4.5.4.60",
+    'ezplotly'
 ]
 build-backend = "setuptools.build_meta"

@@ -3,14 +3,13 @@ import pickle
 
 
 class PickleableObject:
-
     def to_pickle(self, out_pkl_path: str) -> None:
         """
         Pickles object.
 
         param out_pkl_path: Path to output pickle file.
         """
-        with open(out_pkl_path, 'wb') as fout:
+        with open(out_pkl_path, "wb") as fout:
             pickle.dump(self, fout)
         assert os.path.exists(out_pkl_path)
 
@@ -24,7 +23,7 @@ class PickleableObject:
         Return:
             loaded_reference: The loaded object
         """
-        with open(pkl_path, 'rb') as fin:
+        with open(pkl_path, "rb") as fin:
             loaded_obj = pickle.load(fin)
         assert isinstance(loaded_obj, cls)
         return loaded_obj

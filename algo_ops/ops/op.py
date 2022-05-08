@@ -9,6 +9,7 @@ import numpy as np
 
 import algo_ops.paraloop.paraloop as paraloop
 from algo_ops.pickleable_object.pickleable_object import PickleableObject
+from algo_ops.plot.plot import plot_op_execution_time_distribution
 
 
 class Op(ABC, PickleableObject):
@@ -16,23 +17,24 @@ class Op(ABC, PickleableObject):
     Represents a single algorithm operation that can be executed. Inputs and outputs can be visualized.
     """
 
-    def __init__(self, func: Callable):
+    def __init__(self, func: Callable, profiling_figs_path: Optional[str] = 'algo_ops_profile'):
         """
         param func: The operation function
         """
 
         # core functionality
-        self.func = func
-        self.exec_func = func
-        self.name = func.__name__
-        self.input = None
-        self.output = None
+        self.func: Callable = func
+        self.exec_func: Callable = func
+        self.name: str = func.__name__
+        self.input: Optional[Any] = None
+        self.output: Optional[Any] = None
+        self.profiling_figs_path: Optional[str] = profiling_figs_path
 
         # profiling
         self.execution_times: collections.deque = collections.deque(maxlen=1000)
 
         # evaluation functionality variables
-        self.eval_func = None
+        self.eval_func: Optional[Callable] = None
         self.incorrect_pkl_path: Optional[str] = None
 
     def exec(self, inp: Any) -> Any:
@@ -117,6 +119,8 @@ class Op(ABC, PickleableObject):
         """
         Prints execution time statistics of Op.
         """
+
+        # print summary to command line
         print(
             self.name
             + ": "
@@ -124,6 +128,16 @@ class Op(ABC, PickleableObject):
                 execution_times=list(self.execution_times)
             )
         )
+
+        # make plot
+        if self.profiling_figs_path is not None:
+            outfile = os.path.join(self.profiling_figs_path, self.name + ".png")
+            plot_op_execution_time_distribution(
+                execution_times=list(self.execution_times),
+                op_name=self.name,
+                suppress_output=True,
+                outfile=outfile,
+            )
 
     def _embedded_eval(self, inp: Any) -> Tuple[Any, bool]:
         """

@@ -1,7 +1,12 @@
+import os
 from collections import OrderedDict
-from typing import Callable, List, Any, Dict, Union
+from typing import Callable, List, Any, Dict, Union, Optional
 
 from algo_ops.ops.op import Op
+from algo_ops.plot.plot import (
+    plot_op_execution_time_distribution,
+    plot_pipeline_execution_time_distribution,
+)
 
 
 class Pipeline(Op):
@@ -10,8 +15,12 @@ class Pipeline(Op):
     The output of the previous pipeline step is the input of the next pipeline step.
     """
 
-    @staticmethod
-    def _pipeline_op_name(op: Op) -> str:
+    @classmethod
+    def _pipeline_name(cls, pipeline_ops: List[Op]) -> str:
+        return str([str(op.name) for op in pipeline_ops])
+
+    @classmethod
+    def _pipeline_op_name(cls, op: Op) -> str:
         return str(op) + ":" + str(op.name)
 
     def _run(self, inp: Any) -> Any:
@@ -29,16 +38,18 @@ class Pipeline(Op):
             current_input = op.exec(inp=current_input)
         return current_input
 
-    def __init__(self, ops: List[Op]):
+    def __init__(self, ops: List[Op], profiling_figs_path: Optional[str] = 'algo_ops_profile'):
         super().__init__(func=self._run)
         self.ops = OrderedDict()
         for i, op in enumerate(ops):
             assert isinstance(op, Op)
             self.ops[self._pipeline_op_name(op=op)] = op
+        self.name = self._pipeline_name(pipeline_ops=self.ops.values())
 
     @classmethod
     def init_from_funcs(
-        cls, funcs: List[Callable], op_class: Union[Any, List[Any]]
+        cls, funcs: List[Callable], op_class: Union[Any, List[Any]],
+            profiling_figs_path: Optional[str] = 'algo_ops_profile'
     ) -> "Pipeline":
         """
         param funcs: List of pipeline functions that execute serially
@@ -49,7 +60,7 @@ class Pipeline(Op):
             op_class = [op_class for _ in range(len(funcs))]
         ops: List[Op] = list()
         for i, func in enumerate(funcs):
-            ops.append(op_class[i](func))
+            ops.append(op_class[i](func, profiling_figs_path))
         return cls(ops=ops)
 
     def set_params(self, params: Dict[str, Any]) -> None:
@@ -57,7 +68,7 @@ class Pipeline(Op):
             "Please use set_pipeline_params when setting params of pipeline."
         )
 
-    def _find_op(self, func_name: str) -> Op:
+    def find_op(self, func_name: str) -> Op:
         """
         Helper function to find an Op corresponding to a pipeline function.
 
@@ -73,6 +84,20 @@ class Pipeline(Op):
                 return op
         raise ValueError("Op not found: " + func_name)
 
+    def find_ops_by_class(self, op_class: Any) -> List[Op]:
+        """
+        Helper function to find ops by class.
+
+        param op_class: The op class to find
+        return:
+            List of operations of that class in the pipeline
+        """
+        rtn: List[Op] = list()
+        for op in self.ops.values():
+            if isinstance(op, op_class):
+                rtn.append(op)
+        return rtn
+
     def set_pipeline_params(self, func_name: str, params: Dict[str, Any]) -> None:
         """
         Fixes parameters of a function in the pipeline.
@@ -80,7 +105,7 @@ class Pipeline(Op):
         param func_name: The name of the function
         param params: The parameters to fix
         """
-        op = self._find_op(func_name=func_name)
+        op = self.find_op(func_name=func_name)
         op.set_params(params=params)
 
     def save_input(self, out_path: str = ".") -> None:
@@ -129,3 +154,24 @@ class Pipeline(Op):
             )
         )
         print("-------------")
+        if self.profiling_figs_path is not None:
+
+            # plot execution time distribution of entire pipeline
+            outfile = os.path.join(self.profiling_figs_path, self.name + ".png")
+            plot_op_execution_time_distribution(
+                execution_times=list(self.execution_times),
+                op_name=self.name,
+                suppress_output=True,
+                outfile=outfile,
+            )
+
+            # plot op execution time comparison as violin plot
+            outfile = os.path.join(self.profiling_figs_path, self.name + "_violin.png")
+            plot_pipeline_execution_time_distribution(
+                op_execution_times={
+                    op.name: list(op.execution_times) for op in self.ops.values()
+                },
+                pipeline_name=self.name,
+                suppress_output=True,
+                outfile=outfile,
+            )
