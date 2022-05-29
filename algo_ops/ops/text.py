@@ -3,8 +3,8 @@ from algo_ops.ops.op import Op
 
 class TextOp(Op):
     """
-    Represents a single text processing operation that can be executed.
-    Inputs and outputs can be printed to screen and saved.
+    Represents a single text operation that can be executed. Inputs and outputs can be printed to stdout and saved to
+    text file.
     """
 
     def vis_input(self) -> None:

@@ -14,7 +14,8 @@ from algo_ops.plot.plot import plot_op_execution_time_distribution
 
 class Op(ABC, PickleableObject):
     """
-    Represents a single algorithm operation that can be executed. Inputs and outputs can be visualized.
+    Represents a single algorithm operation that can be executed. Inputs and outputs can be visualized and saved to
+    file.
     """
 
     def __init__(

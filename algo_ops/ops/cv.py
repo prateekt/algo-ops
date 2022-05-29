@@ -16,7 +16,7 @@ feed-forward ops that support op-level visualization tools and debugging.
 class CVOp(Op):
     """
     Represents a single computer vision operation that can be executed.
-    Inputs and outputs can be visualized.
+    Inputs and outputs can be visualized as images.
     """
 
     @staticmethod
