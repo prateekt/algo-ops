@@ -114,7 +114,7 @@ class Pipeline(Op):
         op = self.find_op(func_name=func_name)
         op.set_params(params=params)
 
-    def save_input(self, out_path: str = ".") -> None:
+    def save_input(self, out_path: str = ".", basename: Optional[str] = None) -> None:
         raise ValueError("Please use save_output to visualize pipeline data flow.")
 
     def vis_input(self) -> None:
@@ -131,7 +131,7 @@ class Pipeline(Op):
                 op.vis_input()
             op.vis()
 
-    def save_output(self, out_path: str = ".") -> None:
+    def save_output(self, out_path: str = ".", basename: Optional[str] = None) -> None:
         """
         Saves pipeline Op outputs to file.
 
@@ -140,13 +140,11 @@ class Pipeline(Op):
         os.makedirs(out_path, exist_ok=True)
         for i, op_name in enumerate(self.ops.keys()):
             op = self.ops[op_name]
-            prev_name = op.name
-            op.name = self._pipeline_op_name(op=op)
             assert isinstance(op, Op)
+            op_pipeline_name = self._pipeline_op_name(op=op)
             if i == 0:
-                op.save_input(out_path=out_path)
-            op.save_output(out_path=out_path)
-            op.name = prev_name
+                op.save_input(out_path=out_path, basename=op_pipeline_name)
+            op.save_output(out_path=out_path, basename=op_pipeline_name)
 
     def vis_profile(self) -> None:
         """

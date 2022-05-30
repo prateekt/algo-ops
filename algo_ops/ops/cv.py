@@ -1,5 +1,5 @@
 import os
-from typing import Union
+from typing import Union, Optional
 
 import cv2
 import numpy as np
@@ -20,7 +20,7 @@ class CVOp(Op):
     """
 
     @staticmethod
-    def _pyplot_image(img: np.array, title: str) -> None:
+    def pyplot_image(img: np.array, title: str) -> None:
         """
         Helper function to plot image using pyplot.
 
@@ -34,15 +34,19 @@ class CVOp(Op):
         """
         Plot current input image using pyplot (jupyter compatible)
         """
-        self._pyplot_image(img=self.input, title=self.name)
+        if self.input is None:
+            raise ValueError("There is no input to be visualized.")
+        self.pyplot_image(img=self.input, title=self.name)
 
     def vis(self) -> None:
         """
         Plot current output image using pyplot (jupyter compatible)
         """
-        self._pyplot_image(img=self.output, title=self.name)
+        if self.output is None:
+            raise ValueError("There is not output to be visualized.")
+        self.pyplot_image(img=self.output, title=self.name)
 
-    def save_input(self, out_path: str = ".") -> None:
+    def save_input(self, out_path: str = ".", basename: Optional[str] = None) -> None:
         """
         Saves current input image to file.
 
@@ -52,12 +56,16 @@ class CVOp(Op):
             if out_path.endswith(".png"):
                 outfile = out_path
             else:
-                outfile = os.path.join(out_path, self.name + "_input.png")
+                os.makedirs(out_path, exist_ok=True)
+                if basename is not None:
+                    outfile = os.path.join(out_path, basename + "_input.png")
+                else:
+                    outfile = os.path.join(out_path, self.name + "_input.png")
             cv2.imwrite(outfile, self.input)
         else:
             raise ValueError("Op " + str(self.name) + " has not executed yet.")
 
-    def save_output(self, out_path: str = ".") -> None:
+    def save_output(self, out_path: str = ".", basename: Optional[str] = None) -> None:
         """
         Saves current output image to file.
 
@@ -67,7 +75,11 @@ class CVOp(Op):
             if out_path.endswith(".png"):
                 outfile = out_path
             else:
-                outfile = os.path.join(out_path, self.name + ".png")
+                os.makedirs(out_path, exist_ok=True)
+                if basename is not None:
+                    outfile = os.path.join(out_path, basename + ".png")
+                else:
+                    outfile = os.path.join(out_path, self.name + ".png")
             cv2.imwrite(outfile, self.output)
         else:
             raise ValueError("Op " + str(self.name) + " has not executed yet.")

@@ -71,20 +71,22 @@ class Op(ABC, PickleableObject):
         pass
 
     @abstractmethod
-    def save_input(self, out_path: str) -> None:
+    def save_input(self, out_path: str, basename: Optional[str] = None) -> None:
         """
         Saves current input to file.
 
         param out_path: Path to where input should be saved.
+        param basename: File basename
         """
         pass
 
     @abstractmethod
-    def save_output(self, out_path) -> None:
+    def save_output(self, out_path, basename: Optional[str] = None) -> None:
         """
         Saves current output to file.
 
         param out_path: Path to where output should be saved.
+        param basename: File basename
         """
         pass
 
@@ -120,8 +122,14 @@ class Op(ABC, PickleableObject):
 
     def vis_profile(self) -> None:
         """
-        Prints execution time statistics of Op.
+        Prints execution time statistics of Op. Throws ValueError if there are no time measurements.
         """
+
+        # check that measurements exist
+        if len(self.execution_times) == 0:
+            raise ValueError(
+                "There are no profiling measurements yet for Op " + str(self.name) + "."
+            )
 
         # print summary to command line
         print(

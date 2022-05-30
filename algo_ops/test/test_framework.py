@@ -39,6 +39,13 @@ class TestAlgoOpsFramework(unittest.TestCase):
         self.assertEqual(op.output, None)
         self.assertEqual(list(op.execution_times), [])
 
+        # test with empty buffers, not much works
+        for method in [op.save_input, op.save_output, op.vis_profile]:
+            with self.assertRaises(ValueError):
+                method()
+        op.vis_input()
+        op.vis()
+
         # test op execution
         output = op.exec(inp="ab")
         self.assertEqual(output, "ba")
@@ -88,7 +95,8 @@ class TestAlgoOpsFramework(unittest.TestCase):
         Tests a series of TextOps in the pipeline framework.
         """
 
-        # construct pipeline and check that Ops exist and have empty IO buffers
+        # construct pipeline and check that Ops exist and have empty IO buffers. Inputs and outputs can be printed,
+        # but not saved when TextOp pipeline is empty.
         pipeline = Pipeline.init_from_funcs(
             funcs=[self.append_a, self.append_b, self.reverse, self.reverse],
             op_class=TextOp,
@@ -108,6 +116,9 @@ class TestAlgoOpsFramework(unittest.TestCase):
             self.assertEqual(op.input, None)
             self.assertEqual(op.output, None)
             self.assertEqual(op.exec_func, expected_funcs[i])
+        for method in [pipeline.save_input, pipeline.save_output, pipeline.vis_profile]:
+            with self.assertRaises(ValueError):
+                method()
 
         # test running pipeline and check ops IO buffers post execution
         final_output = pipeline.exec(inp="g")
