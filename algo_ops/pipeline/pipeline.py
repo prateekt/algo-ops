@@ -46,6 +46,7 @@ class Pipeline(Op):
         for i, op in enumerate(ops):
             assert isinstance(op, Op)
             self.ops[self._pipeline_op_name(op=op)] = op
+            op.profiling_figs_path = profiling_figs_path
         self.name = self._pipeline_name(pipeline_ops=self.ops.values())
         self.profiling_figs_path = profiling_figs_path
 
@@ -66,7 +67,7 @@ class Pipeline(Op):
         ops: List[Op] = list()
         for i, func in enumerate(funcs):
             ops.append(op_class[i](func, profiling_figs_path))
-        return cls(ops=ops)
+        return cls(ops=ops, profiling_figs_path=profiling_figs_path)
 
     def set_params(self, params: Dict[str, Any]) -> None:
         raise ValueError(
@@ -136,12 +137,16 @@ class Pipeline(Op):
 
         param out_path: Path to where output should go
         """
+        os.makedirs(out_path, exist_ok=True)
         for i, op_name in enumerate(self.ops.keys()):
             op = self.ops[op_name]
+            prev_name = op.name
+            op.name = self._pipeline_op_name(op=op)
             assert isinstance(op, Op)
             if i == 0:
                 op.save_input(out_path=out_path)
             op.save_output(out_path=out_path)
+            op.name = prev_name
 
     def vis_profile(self) -> None:
         """

@@ -48,8 +48,11 @@ class CVOp(Op):
 
         param out_path: Path to where input image should be saved.
         """
-        if self.output is not None:
-            outfile = os.path.join(out_path, self.name + "_input.png")
+        if self.input is not None:
+            if out_path.endswith(".png"):
+                outfile = out_path
+            else:
+                outfile = os.path.join(out_path, self.name + "_input.png")
             cv2.imwrite(outfile, self.input)
         else:
             raise ValueError("Op " + str(self.name) + " has not executed yet.")
@@ -61,7 +64,10 @@ class CVOp(Op):
         param out_path: Path to where output image should be saved.
         """
         if self.output is not None:
-            outfile = os.path.join(out_path, self.name + ".png")
+            if out_path.endswith(".png"):
+                outfile = out_path
+            else:
+                outfile = os.path.join(out_path, self.name + ".png")
             cv2.imwrite(outfile, self.output)
         else:
             raise ValueError("Op " + str(self.name) + " has not executed yet.")

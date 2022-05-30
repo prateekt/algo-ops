@@ -63,6 +63,18 @@ class TestAlgoOpsFramework(unittest.TestCase):
         self.assertEqual(op.output, "a")
         self.assertEqual(len(op.execution_times), 2)
 
+        # test op saving input and output
+        op.save_input()
+        op.save_output()
+        self.assertTrue(os.path.exists("reverse.txt"))
+        self.assertTrue(os.path.exists("reverse_input.txt"))
+        with open("reverse.txt", "r") as fin:
+            self.assertEqual(fin.read(), "a")
+        with open("reverse_input.txt", "r") as fin:
+            self.assertEqual(fin.read(), "a")
+        os.unlink("reverse.txt")
+        os.unlink("reverse_input.txt")
+
         # test op pickle and recover state
         op.to_pickle(out_pkl_path="test.pkl")
         reloaded_op = TextOp.load_from_pickle(pkl_path="test.pkl")
@@ -80,6 +92,7 @@ class TestAlgoOpsFramework(unittest.TestCase):
         pipeline = Pipeline.init_from_funcs(
             funcs=[self.append_a, self.append_b, self.reverse, self.reverse],
             op_class=TextOp,
+            profiling_figs_path="profiling_figs_path",
         )
         self.assertEqual(pipeline.input, None)
         self.assertEqual(pipeline.output, None)
@@ -129,6 +142,16 @@ class TestAlgoOpsFramework(unittest.TestCase):
             else:
                 self.assertEqual(op.output, pipeline.ops[op_names[i + 1]].input)
 
+        # test pipeline save input/output
+        if os.path.exists("saving_test"):
+            shutil.rmtree("saving_test")
+        with self.assertRaises(ValueError):
+            pipeline.save_input()
+        pipeline.save_output(out_path="saving_test")
+        self.assertTrue(os.path.exists("saving_test"))
+        self.assertEqual(len(os.listdir("saving_test")), 5)
+        shutil.rmtree("saving_test")
+
         # pipeline vis test
         pipeline.vis()
         pipeline.vis_profile()
@@ -139,12 +162,11 @@ class TestAlgoOpsFramework(unittest.TestCase):
             "append_b",
             "reverse",
         ]
-        self.assertTrue(os.path.exists("algo_ops_profile"))
+        self.assertTrue(os.path.exists("profiling_figs_path"))
         for fig_file in fig_files:
-            fig_path = os.path.join("algo_ops_profile", fig_file + ".png")
-            print(fig_path)
+            fig_path = os.path.join("profiling_figs_path", fig_file + ".png")
             self.assertTrue(os.path.exists(fig_path))
-        shutil.rmtree("algo_ops_profile")
+        shutil.rmtree("profiling_figs_path")
 
         # test reloading pipeline after first and check reloaded pipeline
         reloaded_pipeline = Pipeline.load_from_pickle(pkl_path="test.pkl")

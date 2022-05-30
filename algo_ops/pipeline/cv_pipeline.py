@@ -32,7 +32,7 @@ class CVPipeline(Pipeline):
         ops: List[Op] = list()
         for i, func in enumerate(funcs):
             ops.append(op_class[i](func))
-        return cls(ops=ops)
+        return cls(ops=ops, profiling_figs_path=profiling_figs_path)
 
     def vis(
         self, num_cols: int = 4, fig_width: int = 15, fig_height: int = 6, dpi: int = 80
