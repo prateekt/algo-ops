@@ -43,7 +43,7 @@ class CVOp(Op):
         Plot current output image using pyplot (jupyter compatible)
         """
         if self.output is None:
-            raise ValueError("There is not output to be visualized.")
+            raise ValueError("There is no output to be visualized.")
         self.pyplot_image(img=self.output, title=self.name)
 
     def save_input(self, out_path: str = ".", basename: Optional[str] = None) -> None:
