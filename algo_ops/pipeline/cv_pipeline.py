@@ -1,5 +1,5 @@
 import math
-from typing import List, Callable, Optional
+from typing import List, Callable
 
 from matplotlib import pyplot as plt
 
@@ -19,11 +19,9 @@ class CVPipeline(Pipeline):
         cls,
         funcs: List[Callable],
         op_class=CVOp,
-        profiling_figs_path: Optional[str] = "algo_ops_figs",
     ) -> "CVPipeline":
         """
-        param funcs: List of pipeline functions that execute serially
-            as operations in pipeline.
+        param funcs: List of pipeline functions that execute serially as operations in pipeline.
         param op_class: The subclass of Op that the pipeline uses
         param profiling_figs_path: The profiling figs path
         """
@@ -32,14 +30,14 @@ class CVPipeline(Pipeline):
         ops: List[Op] = list()
         for i, func in enumerate(funcs):
             ops.append(op_class[i](func))
-        return cls(ops=ops, profiling_figs_path=profiling_figs_path)
+        return cls(ops=ops)
 
     def vis(
         self, num_cols: int = 4, fig_width: int = 15, fig_height: int = 6, dpi: int = 80
     ) -> None:
         """
-        Plot current output images of each Op using pyplot (jupyter compatible).
-        Defaults optimize for Jupyter notebook plotting. Throws ValueError if no data has been input to pipeline yet.
+        Plot current output images of each Op using pyplot (jupyter compatible). Defaults optimize for Jupyter
+        notebook plotting. Throws ValueError if no data has been input to pipeline yet.
 
         param num_cols: Number of image columns to display
         param fig_width: Total width of figure

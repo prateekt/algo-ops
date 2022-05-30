@@ -41,14 +41,13 @@ class TestCVPipeline(unittest.TestCase):
         self.assertTrue(not os.path.exists("cvop_results"))
 
         # init and test empty state
-        op = CVOp(func=self._invert_img, profiling_figs_path="test_profile")
+        op = CVOp(func=self._invert_img)
         self.assertTrue(isinstance(op, CVOp))
         self.assertEqual(op.input, None)
         self.assertEqual(op.output, None)
         self.assertEqual(op.name, "_invert_img")
         self.assertEqual(op.exec_func, self._invert_img)
         self.assertEqual(len(op.execution_times), 0)
-        self.assertEqual(op.profiling_figs_path, "test_profile")
         for method in [
             op.vis_input,
             op.vis,
@@ -80,7 +79,7 @@ class TestCVPipeline(unittest.TestCase):
 
         # test profiling data
         self.assertEqual(len(op.execution_times), 1)
-        op.vis_profile()
+        op.vis_profile(profiling_figs_path="test_profile")
         self.assertEqual(len(os.listdir("test_profile")), 1)
         self.assertTrue(os.path.exists("test_profile"))
         self.assertTrue(os.path.exists(os.path.join("test_profile", "_invert_img.png")))
@@ -94,7 +93,6 @@ class TestCVPipeline(unittest.TestCase):
         # init pipeline and check empty state
         pipeline = CVPipeline.init_from_funcs(
             funcs=[self._gray_scale, self._invert_img],
-            profiling_figs_path="profiling_figs",
         )
         self.assertTrue(isinstance(pipeline, CVPipeline))
         self.assertEqual(pipeline.input, None)
@@ -130,7 +128,7 @@ class TestCVPipeline(unittest.TestCase):
         # test profiling
         if os.path.exists("profiling_figs"):
             shutil.rmtree("profiling_figs")
-        pipeline.vis_profile()
+        pipeline.vis_profile(profiling_figs_path="profiling_figs")
         fig_files = [
             "['_gray_scale', '_invert_img']",
             "['_gray_scale', '_invert_img']_violin",
@@ -151,12 +149,10 @@ class TestCVPipeline(unittest.TestCase):
         with self.assertRaises(AssertionError):
             CVPipeline.init_from_funcs(
                 funcs=[self._gray_scale, self._invert_img],
-                profiling_figs_path="profiling_figs",
                 op_class=TextOp,
             )
         with self.assertRaises(AssertionError):
             CVPipeline.init_from_funcs(
                 funcs=[self._gray_scale, self._invert_img],
-                profiling_figs_path="profiling_figs",
                 op_class=None,
             )

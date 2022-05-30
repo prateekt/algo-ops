@@ -26,8 +26,8 @@ class TextOp(Op):
         """
         Saves current input text to file.
 
-        param out_path: Path to where input file should be saved.
-        param basename: Basename of output file
+        param out_path: Path to where file should be saved.
+        param basename: Basename of file
         """
         if self.input is not None:
             if out_path.endswith(".txt"):
@@ -46,8 +46,8 @@ class TextOp(Op):
         """
         Saves current output to file.
 
-        param out_path: Path to where output file should be saved.
-        param basename: Basename of output file
+        param out_path: Path to where file should be saved.
+        param basename: Basename of file
         """
         if self.output is not None:
             if out_path.endswith(".txt"):

@@ -17,17 +17,34 @@ class Pipeline(Op):
 
     @classmethod
     def _pipeline_name(cls, pipeline_ops: List[Op]) -> str:
+        """
+        Returns the pipeline of the pipeline as a string concatenated list of the names of its Ops.
+
+        param pipeline_ops: The pipeline Ops
+
+        return:
+            Pipeline name
+        """
         return str([str(op.name) for op in pipeline_ops])
 
     @classmethod
     def _pipeline_op_name(cls, op: Op) -> str:
+        """
+        Returns the pipeline name of an op using its memory address.
+
+        param op: The Op
+
+        return:
+            Pipeline Op name
+        """
         return str(op) + ":" + str(op.name)
 
     def _run(self, inp: Any) -> Any:
         """
-        Run entire pipeline on input, one op at a time.
+        Run entire pipeline on an input. Each operation executes sequentially and produces an output that is passed
+        to the next sequential Op. The final output of the pipeline is the result of the last Op.
 
-        param inp: The top-level pipeline input
+        param inp: The top-level pipeline input that is fed-forward into the pipeline
 
         return:
             output: The output of the pipeline
@@ -38,30 +55,24 @@ class Pipeline(Op):
             current_input = op.exec(inp=current_input)
         return current_input
 
-    def __init__(
-        self, ops: List[Op], profiling_figs_path: Optional[str] = "algo_ops_profile"
-    ):
+    def __init__(self, ops: List[Op]):
         """
         Initialize a pipeline.
 
         param ops: List of ops in the pipeline
-        :aram profiling_figs_path: Path to where profiling figs should go
         """
         super().__init__(func=self._run)
         self.ops = OrderedDict()
         for i, op in enumerate(ops):
             assert isinstance(op, Op)
             self.ops[self._pipeline_op_name(op=op)] = op
-            op.profiling_figs_path = profiling_figs_path
         self.name = self._pipeline_name(pipeline_ops=self.ops.values())
-        self.profiling_figs_path = profiling_figs_path
 
     @classmethod
     def init_from_funcs(
         cls,
         funcs: List[Callable],
         op_class: Union[Any, List[Any]],
-        profiling_figs_path: Optional[str] = "algo_ops_profile",
     ) -> "Pipeline":
         """
         Initializes a pipeline from a list of functions that sequentially execute in the pipeline.
@@ -69,14 +80,13 @@ class Pipeline(Op):
         param funcs: List of pipeline functions that execute serially
             as operations in pipeline.
         param op_class: The subclass of Op that the pipeline uses
-        param profiling_figs_path: Path to where profiling figs should go
         """
         if not isinstance(op_class, list):
             op_class = [op_class for _ in range(len(funcs))]
         ops: List[Op] = list()
         for i, func in enumerate(funcs):
-            ops.append(op_class[i](func, profiling_figs_path))
-        return cls(ops=ops, profiling_figs_path=profiling_figs_path)
+            ops.append(op_class[i](func))
+        return cls(ops=ops)
 
     def set_params(self, params: Dict[str, Any]) -> None:
         raise ValueError(
@@ -106,7 +116,7 @@ class Pipeline(Op):
         param op_class: The op class to find
 
         return:
-            List of operations of that class in the pipeline
+            List of operations of that Op class in the pipeline
         """
         rtn: List[Op] = list()
         for op in self.ops.values():
@@ -157,9 +167,14 @@ class Pipeline(Op):
                 op.save_input(out_path=out_path, basename=op_pipeline_name)
             op.save_output(out_path=out_path, basename=op_pipeline_name)
 
-    def vis_profile(self) -> None:
+    def vis_profile(
+        self, profiling_figs_path: Optional[str] = "algo_ops_profile"
+    ) -> None:
         """
-        Visualizes timing profiling information about pipeline Ops. If no profiling data is available, throw a ValueError.
+        Visualizes timing profiling information about pipeline Ops. Generates stdout output and figures if
+        profiling_figs_path is specified. If no profiling data is available, throw a ValueError.
+
+        param profiling_figs_path: Path to where profiling figs should go
         """
         # if pipeline has never been run, no profiling data available so cannot make profile plots
         if len(self.execution_times) == 0:
@@ -172,7 +187,7 @@ class Pipeline(Op):
         for i, op_name in enumerate(self.ops.keys()):
             op = self.ops[op_name]
             assert isinstance(op, Op)
-            op.vis_profile()
+            op.vis_profile(profiling_figs_path=profiling_figs_path)
         print(
             "Total: "
             + self._format_execution_time_stats(
@@ -181,11 +196,11 @@ class Pipeline(Op):
         )
         print("-------------")
 
-        # make figures (if needed)
-        if self.profiling_figs_path is not None:
+        # make figures for pipeline if needed
+        if profiling_figs_path is not None:
 
             # plot execution time distribution of entire pipeline
-            outfile = os.path.join(self.profiling_figs_path, self.name + ".png")
+            outfile = os.path.join(profiling_figs_path, self.name + ".png")
             plot_op_execution_time_distribution(
                 execution_times=list(self.execution_times),
                 op_name=self.name,
@@ -194,7 +209,7 @@ class Pipeline(Op):
             )
 
             # plot op execution time comparison as violin plot
-            outfile = os.path.join(self.profiling_figs_path, self.name + "_violin.png")
+            outfile = os.path.join(profiling_figs_path, self.name + "_violin.png")
             plot_pipeline_execution_time_distribution(
                 op_execution_times={
                     op.name: list(op.execution_times) for op in self.ops.values()

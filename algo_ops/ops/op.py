@@ -18,12 +18,9 @@ class Op(ABC, PickleableObject):
     file.
     """
 
-    def __init__(
-        self, func: Callable, profiling_figs_path: Optional[str] = "algo_ops_profile"
-    ):
+    def __init__(self, func: Callable):
         """
         param func: The operation function
-        param profiling_figs_path: Path to where profiling fils should go
         """
 
         # core functionality
@@ -32,7 +29,6 @@ class Op(ABC, PickleableObject):
         self.name: str = func.__name__
         self.input: Optional[Any] = None
         self.output: Optional[Any] = None
-        self.profiling_figs_path: Optional[str] = profiling_figs_path
 
         # profiling
         self.execution_times: collections.deque = collections.deque(maxlen=1000)
@@ -45,10 +41,10 @@ class Op(ABC, PickleableObject):
         """
         Executes operation function on an input. Is also self-time profiling.
 
-        param inp: The input
+        param inp: The Op input
 
         return
-            output: The result of the operation
+            output: The result of the executing the operation
         """
         self.input = inp
         t0 = time.time()
@@ -122,9 +118,14 @@ class Op(ABC, PickleableObject):
             + " s/call"
         )
 
-    def vis_profile(self) -> None:
+    def vis_profile(
+        self, profiling_figs_path: Optional[str] = "algo_ops_profile"
+    ) -> None:
         """
-        Prints execution time statistics of Op. Throws ValueError if there are no time measurements.
+        Prints execution time statistics of Op. Generates stdout output and figures if profiling_figs_path is
+        specified. If no profiling data is available, throw a ValueError.
+
+        param profiling_figs_path: Path to where profiling figures should go.
         """
 
         # check that measurements exist
@@ -142,9 +143,9 @@ class Op(ABC, PickleableObject):
             )
         )
 
-        # make plot
-        if self.profiling_figs_path is not None:
-            outfile = os.path.join(self.profiling_figs_path, self.name + ".png")
+        # make plot if needed
+        if profiling_figs_path is not None:
+            outfile = os.path.join(profiling_figs_path, self.name + ".png")
             plot_op_execution_time_distribution(
                 execution_times=list(self.execution_times),
                 op_name=self.name,
@@ -157,6 +158,8 @@ class Op(ABC, PickleableObject):
         Helper function to embed evaluation and prediction in same function.
         Returns true if function, when run on input, yielded correct result.
         If false, pickles, op state to file, if pickle path is specified.
+
+        param inp: Op input
         """
         result = self.exec(inp=inp)
         correct = self.eval_func(inp=inp, pred=result)
@@ -182,7 +185,7 @@ class Op(ABC, PickleableObject):
         param inputs: The set of inputs to evaluate on
         param eval_func: A function to evaluate a prediction on an input
         param incorrect_pkl_path: Path where incorrect prediction states should be pickled
-        param mechanism: The paraloop mechanism to use
+        param mechanism: The paraloop mechanism to use (e.g. parallel, sequential)
 
         return:
             results: (List of results of pipeline executions, bool whether answer was correct)
