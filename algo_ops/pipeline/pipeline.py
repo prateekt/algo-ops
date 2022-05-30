@@ -41,6 +41,12 @@ class Pipeline(Op):
     def __init__(
         self, ops: List[Op], profiling_figs_path: Optional[str] = "algo_ops_profile"
     ):
+        """
+        Initialize a pipeline.
+
+        param ops: List of ops in the pipeline
+        :aram profiling_figs_path: Path to where profiling figs should go
+        """
         super().__init__(func=self._run)
         self.ops = OrderedDict()
         for i, op in enumerate(ops):
@@ -58,9 +64,12 @@ class Pipeline(Op):
         profiling_figs_path: Optional[str] = "algo_ops_profile",
     ) -> "Pipeline":
         """
+        Initializes a pipeline from a list of functions that sequentially execute in the pipeline.
+
         param funcs: List of pipeline functions that execute serially
             as operations in pipeline.
         param op_class: The subclass of Op that the pipeline uses
+        param profiling_figs_path: Path to where profiling figs should go
         """
         if not isinstance(op_class, list):
             op_class = [op_class for _ in range(len(funcs))]
@@ -95,6 +104,7 @@ class Pipeline(Op):
         Helper function to find ops by class.
 
         param op_class: The op class to find
+
         return:
             List of operations of that class in the pipeline
         """
@@ -122,7 +132,7 @@ class Pipeline(Op):
 
     def vis(self) -> None:
         """
-        Visualize current outputs of each Op.
+        Visualize current outputs of each Op as well as pipeline input.
         """
         for i, op_name in enumerate(self.ops.keys()):
             op = self.ops[op_name]
@@ -136,6 +146,7 @@ class Pipeline(Op):
         Saves pipeline Op outputs to file.
 
         param out_path: Path to where output should go
+        param basename: Basename of output file
         """
         os.makedirs(out_path, exist_ok=True)
         for i, op_name in enumerate(self.ops.keys()):

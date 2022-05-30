@@ -23,6 +23,7 @@ class Op(ABC, PickleableObject):
     ):
         """
         param func: The operation function
+        param profiling_figs_path: Path to where profiling fils should go
         """
 
         # core functionality
@@ -45,6 +46,7 @@ class Op(ABC, PickleableObject):
         Executes operation function on an input. Is also self-time profiling.
 
         param inp: The input
+
         return
             output: The result of the operation
         """

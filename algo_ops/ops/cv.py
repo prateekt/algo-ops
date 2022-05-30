@@ -51,6 +51,7 @@ class CVOp(Op):
         Saves current input image to file.
 
         param out_path: Path to where input image should be saved.
+        param basename: Basename of output file
         """
         if self.input is not None:
             if out_path.endswith(".png"):
@@ -70,6 +71,7 @@ class CVOp(Op):
         Saves current output image to file.
 
         param out_path: Path to where output image should be saved.
+        param basename: Basename of output file
         """
         if self.output is not None:
             if out_path.endswith(".png"):
@@ -90,6 +92,7 @@ class CVOp(Op):
         performs an operation on the image, and returns as new image.
 
         param inp: The input
+
         return
             output: The result of the operation
         """
