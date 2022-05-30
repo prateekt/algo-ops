@@ -19,9 +19,12 @@ def plot_op_execution_time_distribution(
     param suppress_output: Whether to suppress output
     param outfile: File to write
     """
+
+    # make figs dir
     figs_dir = os.path.dirname(outfile)
     os.makedirs(figs_dir, exist_ok=True)
 
+    # make plot
     tl = "Distribution of " + op_name + " Execution Times"
     fig = ep.hist(data=execution_times, xlabel="Op Execution Time (s)", title=tl)
     ep.plot_all(plots=fig, suppress_output=suppress_output, outfile=outfile)
@@ -41,9 +44,12 @@ def plot_pipeline_execution_time_distribution(
     param suppress_output: Whether to suppress output
     param outfile: File to write
     """
+
+    # make figs dir
     figs_dir = os.path.dirname(outfile)
     os.makedirs(figs_dir, exist_ok=True)
 
+    # make fig
     figs: List[EZPlotlyPlot] = list()
     for op_name in op_execution_times:
         xlabel = op_name

@@ -7,7 +7,7 @@ with open("requirements.txt") as f:
 
 setuptools.setup(
     name="algo-ops",
-    version="0.0.1.5.4",
+    version="0.0.1.5.5",
     author="Prateek Tandon",
     author_email="prateek1.tandon@gmail.com",
     description="Algo-Ops Smart Infrastructure",

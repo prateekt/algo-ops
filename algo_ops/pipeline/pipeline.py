@@ -148,8 +148,15 @@ class Pipeline(Op):
 
     def vis_profile(self) -> None:
         """
-        Visualizes timing profiling information about pipeline Ops.
+        Visualizes timing profiling information about pipeline Ops. If no profiling data is available, throw a ValueError.
         """
+        # if pipeline has never been run, no profiling data available so cannot make profile plots
+        if len(self.execution_times) == 0:
+            raise ValueError(
+                "No profiling data available yet since pipeline has not been run."
+            )
+
+        # print profiling per op
         print("---Profile---")
         for i, op_name in enumerate(self.ops.keys()):
             op = self.ops[op_name]
@@ -162,6 +169,8 @@ class Pipeline(Op):
             )
         )
         print("-------------")
+
+        # make figures (if needed)
         if self.profiling_figs_path is not None:
 
             # plot execution time distribution of entire pipeline

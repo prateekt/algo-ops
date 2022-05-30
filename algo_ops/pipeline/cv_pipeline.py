@@ -39,13 +39,21 @@ class CVPipeline(Pipeline):
     ) -> None:
         """
         Plot current output images of each Op using pyplot (jupyter compatible).
-        Defaults optimize for Jupyter notebook plotting.
+        Defaults optimize for Jupyter notebook plotting. Throws ValueError if no data has been input to pipeline yet.
 
         param num_cols: Number of image columns to display
         param fig_width: Total width of figure
         param fig_height: Total height of figure
         param dpi: DPI of figure
         """
+
+        # throw value error if no pipeline inputs
+        if self.input is None:
+            raise ValueError(
+                "Cannot visualize pipeline if no input data has been run through."
+            )
+
+        # make plots
         num_rows = math.ceil((len(self.ops.keys()) + 1) / num_cols)
         plt.figure(figsize=(fig_width, fig_height), dpi=dpi)
         plt_num = 1
@@ -55,7 +63,7 @@ class CVPipeline(Pipeline):
             if i == 0:
                 plt.subplot(num_rows, num_cols, plt_num)
                 op.vis_input()
-                plt.title("Input")
+                plt.title(str(self.name) + " Input")
                 plt_num += 1
             plt.subplot(num_rows, num_cols, plt_num)
             plt_num += 1
