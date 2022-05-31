@@ -262,3 +262,34 @@ class TestAlgoOpsFramework(unittest.TestCase):
             self.assertTrue(isinstance(reloaded_pipeline, Pipeline))
             self.assertEqual(reloaded_pipeline.input, inp)
         shutil.rmtree("bad_pkl")
+
+    def test_pipeline_of_pipelines(self) -> None:
+        """
+        Test that pipelines of pipelines work.
+        """
+        pipeline1 = Pipeline.init_from_funcs(
+            funcs=[self.append_a, self.append_something, self.reverse, self.reverse],
+            op_class=TextOp,
+        )
+        pipeline1.set_pipeline_params(
+            func_name="append_something", params={"something": "b"}
+        )
+        pipeline2 = Pipeline.init_from_funcs(
+            funcs=[self.append_a, self.append_b, self.reverse],
+            op_class=TextOp,
+        )
+        total_pipeline = Pipeline(ops=[pipeline1, pipeline2])
+        output = total_pipeline.exec(inp="z")
+        self.assertEqual(pipeline1.input, "z")
+        self.assertEqual(pipeline1.output, "zab")
+        self.assertEqual(pipeline2.input, "zab")
+        self.assertEqual(pipeline2.output, "babaz")
+        self.assertEqual(output, "babaz")
+        with self.assertRaises(ValueError):
+            total_pipeline.vis_input()
+        pipeline1.vis()
+        pipeline2.vis()
+        total_pipeline.vis()
+        total_pipeline.vis_profile(profiling_figs_path="test_profile")
+        self.assertEqual(len(os.listdir("test_profile")), 10)
+        shutil.rmtree("test_profile")

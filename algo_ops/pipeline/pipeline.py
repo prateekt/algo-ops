@@ -147,7 +147,7 @@ class Pipeline(Op):
         for i, op_name in enumerate(self.ops.keys()):
             op = self.ops[op_name]
             assert isinstance(op, Op)
-            if i == 0:
+            if i == 0 and not isinstance(op, Pipeline):
                 op.vis_input()
             op.vis()
 
