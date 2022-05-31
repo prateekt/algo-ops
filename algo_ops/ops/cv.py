@@ -1,11 +1,11 @@
 import os
-from typing import Union, Optional
+from typing import Union, Optional, Callable
 
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
 
 from algo_ops.ops.op import Op
+from algo_ops.plot.plot import pyplot_image
 
 """
 CVOps is infrastructure to build an OpenCV pipeline as a list of
@@ -19,32 +19,35 @@ class CVOp(Op):
     Inputs and outputs can be visualized as images.
     """
 
-    @staticmethod
-    def pyplot_image(img: np.array, title: str) -> None:
-        """
-        Helper function to plot image using pyplot.
-
-        param img: Image to plot
-        param title: Image title
-        """
-        plt.imshow(img)
-        plt.title(title)
+    def __init__(self, func: Callable, suppress_plots: bool = False):
+        super().__init__(func=func)
+        self.suppress_plots = suppress_plots
 
     def vis_input(self) -> None:
         """
         Plot current input image using pyplot (jupyter compatible)
+
+        param suppress_plot: Whether to suppress plot (helpful when running from command line)
         """
         if self.input is None:
             raise ValueError("There is no input to be visualized.")
-        self.pyplot_image(img=self.input, title=self.name)
+        if not self.suppress_plots:
+            pyplot_image(img=self.input, title=self.name)
+        else:
+            print("Plot of input suppressed: " + str(self.name))
 
     def vis(self) -> None:
         """
         Plot current output image using pyplot (jupyter compatible)
+
+        param suppress_plot: Whether to suppress plot (helpful when running from command line)
         """
         if self.output is None:
             raise ValueError("There is no output to be visualized.")
-        self.pyplot_image(img=self.output, title=self.name)
+        if not self.suppress_plots:
+            pyplot_image(img=self.output, title=self.name)
+        else:
+            print("Plot of output suppressed: " + str(self.name))
 
     def save_input(self, out_path: str = ".", basename: Optional[str] = None) -> None:
         """

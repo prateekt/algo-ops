@@ -14,11 +14,13 @@ class CVPipeline(Pipeline):
     auto-dashboarding of pipeline steps.
     """
 
+    def __init__(self, ops: List[CVOp], suppress_plots: bool = False):
+        super().__init__(ops=ops)
+        self.suppress_plots = suppress_plots
+
     @classmethod
     def init_from_funcs(
-        cls,
-        funcs: List[Callable],
-        op_class=CVOp,
+        cls, funcs: List[Callable], op_class=CVOp, suppress_plots: bool = False
     ) -> "CVPipeline":
         """
         param funcs: List of pipeline functions that execute serially as operations in pipeline.
@@ -26,11 +28,8 @@ class CVPipeline(Pipeline):
         param profiling_figs_path: The profiling figs path
         """
         assert op_class is CVOp, "Cannot use non-CVOp in CVPipeline."
-        op_class = [op_class for _ in range(len(funcs))]
-        ops: List[Op] = list()
-        for i, func in enumerate(funcs):
-            ops.append(op_class[i](func))
-        return cls(ops=ops)
+        ops: List[CVOp] = [op_class(func=func) for func in funcs]
+        return cls(ops=ops, suppress_plots=suppress_plots)
 
     def vis(
         self, num_cols: int = 4, fig_width: int = 15, fig_height: int = 6, dpi: int = 80
@@ -45,13 +44,16 @@ class CVPipeline(Pipeline):
         param dpi: DPI of figure
         """
 
-        # throw value error if no pipeline inputs
+        # validate inputs
         if self.input is None:
             raise ValueError(
                 "Cannot visualize pipeline if no input data has been run through."
             )
+        if self.suppress_plots:
+            print("Plot of pipeline " + str(self.name) + " suppressed.")
+            return
 
-        # make plots
+        # make plot of pipeline CVOps data flow
         num_rows = math.ceil((len(self.ops.keys()) + 1) / num_cols)
         plt.figure(figsize=(fig_width, fig_height), dpi=dpi)
         plt_num = 1

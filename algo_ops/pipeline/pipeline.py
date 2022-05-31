@@ -204,7 +204,7 @@ class Pipeline(Op):
             plot_op_execution_time_distribution(
                 execution_times=list(self.execution_times),
                 op_name=self.name,
-                suppress_output=True,
+                suppress_plot=True,
                 outfile=outfile,
             )
 
@@ -215,6 +215,6 @@ class Pipeline(Op):
                     op.name: list(op.execution_times) for op in self.ops.values()
                 },
                 pipeline_name=self.name,
-                suppress_output=True,
+                suppress_plot=True,
                 outfile=outfile,
             )

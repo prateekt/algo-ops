@@ -2,13 +2,26 @@ import os.path
 from typing import List, Optional, Dict
 
 import ezplotly as ep
+import numpy as np
 from ezplotly import EZPlotlyPlot
+from matplotlib import pyplot as plt
+
+
+def pyplot_image(img: np.array, title: str) -> None:
+    """
+    Helper function to plot image using pyplot.
+
+    param img: Image to plot
+    param title: Image title
+    """
+    plt.imshow(img)
+    plt.title(title)
 
 
 def plot_op_execution_time_distribution(
     execution_times: List[float],
     op_name: str,
-    suppress_output: bool = False,
+    suppress_plot: bool = False,
     outfile: Optional[str] = None,
 ) -> None:
     """
@@ -16,8 +29,8 @@ def plot_op_execution_time_distribution(
 
     param execution_times: List of Op execution times
     param op_name: The name of the op
-    param suppress_output: Whether to suppress output
-    param outfile: File to write
+    param suppress_plot: Whether to suppress plot output to screen. If Jupyter, use False.
+    param outfile: File to write. If None, no file is written.
     """
 
     # make figs dir
@@ -27,13 +40,13 @@ def plot_op_execution_time_distribution(
     # make plot
     tl = "Distribution of " + op_name + " Execution Times"
     fig = ep.hist(data=execution_times, xlabel="Op Execution Time (s)", title=tl)
-    ep.plot_all(plots=fig, suppress_output=suppress_output, outfile=outfile)
+    ep.plot_all(plots=fig, suppress_output=suppress_plot, outfile=outfile)
 
 
 def plot_pipeline_execution_time_distribution(
     op_execution_times: Dict[str, List[float]],
     pipeline_name: str,
-    suppress_output: bool = False,
+    suppress_plot: bool = False,
     outfile: Optional[str] = None,
 ) -> None:
     """
@@ -41,8 +54,8 @@ def plot_pipeline_execution_time_distribution(
 
     param op_execution_times: Dict mapping op_name -> List of function call execution times
     param pipeline_name: The name of the pipeline
-    param suppress_output: Whether to suppress output
-    param outfile: File to write
+    param suppress_plot: Whether to suppress plot output to screen. If Jupyter, use False.
+    param outfile: File to write. If None, no file is written.
     """
 
     # make figs dir
@@ -62,6 +75,6 @@ def plot_pipeline_execution_time_distribution(
     ep.plot_all(
         plots=figs,
         panels=[1] * len(figs),
-        suppress_output=suppress_output,
+        suppress_output=suppress_plot,
         outfile=outfile,
     )

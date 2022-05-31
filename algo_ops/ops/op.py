@@ -149,7 +149,7 @@ class Op(ABC, PickleableObject):
             plot_op_execution_time_distribution(
                 execution_times=list(self.execution_times),
                 op_name=self.name,
-                suppress_output=True,
+                suppress_plot=True,
                 outfile=outfile,
             )
 

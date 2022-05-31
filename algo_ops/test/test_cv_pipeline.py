@@ -41,7 +41,7 @@ class TestCVPipeline(unittest.TestCase):
         self.assertTrue(not os.path.exists("cvop_results"))
 
         # init and test empty state
-        op = CVOp(func=self._invert_img)
+        op = CVOp(func=self._invert_img, suppress_plots=True)
         self.assertTrue(isinstance(op, CVOp))
         self.assertEqual(op.input, None)
         self.assertEqual(op.output, None)
@@ -59,13 +59,17 @@ class TestCVPipeline(unittest.TestCase):
                 method()
 
         # test that Op executes as expected and matches manual call to function
-        pipeline_output = op.exec(inp=self.test_image)
+        output = op.exec(inp=self.test_image)
         original_inp = cv2.imread(filename=self.test_image)
         original_inp = cv2.cvtColor(original_inp, cv2.COLOR_BGR2RGB)
         manual_output = self._invert_img(original_inp)
-        self.assertTrue(np.array_equal(pipeline_output, manual_output))
+        self.assertTrue(np.array_equal(output, manual_output))
         self.assertTrue(np.array_equal(op.output, manual_output))
         self.assertTrue(np.array_equal(op.input, original_inp))
+
+        # test vis (with plots suppressed)
+        op.vis_input()
+        op.vis()
 
         # test saving input / outputs
         op.save_input(out_path="cvop_results")
@@ -92,17 +96,20 @@ class TestCVPipeline(unittest.TestCase):
 
         # init pipeline and check empty state
         pipeline = CVPipeline.init_from_funcs(
-            funcs=[self._gray_scale, self._invert_img],
+            funcs=[self._gray_scale, self._invert_img], suppress_plots=True
         )
         self.assertTrue(isinstance(pipeline, CVPipeline))
         self.assertEqual(pipeline.input, None)
         self.assertEqual(pipeline.output, None)
-        with self.assertRaises(ValueError):
-            pipeline.save_input()
-        with self.assertRaises(ValueError):
-            pipeline.save_output()
-        with self.assertRaises(ValueError):
-            pipeline.vis_input()
+        for method in (
+            pipeline.vis_input,
+            pipeline.vis,
+            pipeline.save_input,
+            pipeline.save_output,
+            pipeline.vis_profile,
+        ):
+            with self.assertRaises(ValueError):
+                method()
 
         # test that pipeline output matches stacking functions manually
         pipeline_output = pipeline.exec(inp=self.test_image)
@@ -112,6 +119,11 @@ class TestCVPipeline(unittest.TestCase):
         self.assertTrue(np.array_equal(pipeline_output, manual_output))
         self.assertTrue(np.array_equal(pipeline.output, manual_output))
         self.assertTrue(np.array_equal(pipeline.input, self.test_image))
+
+        # test vis (with plots suppressed)
+        with self.assertRaises(ValueError):
+            pipeline.vis_input()
+        pipeline.vis()
 
         # test the pipeline saving input cannot be used
         with self.assertRaises(ValueError):
@@ -129,14 +141,13 @@ class TestCVPipeline(unittest.TestCase):
         if os.path.exists("profiling_figs"):
             shutil.rmtree("profiling_figs")
         pipeline.vis_profile(profiling_figs_path="profiling_figs")
-        fig_files = [
+        self.assertTrue(os.path.exists("profiling_figs"))
+        for fig_file in (
             "['_gray_scale', '_invert_img']",
             "['_gray_scale', '_invert_img']_violin",
             "_gray_scale",
             "_invert_img",
-        ]
-        self.assertTrue(os.path.exists("profiling_figs"))
-        for fig_file in fig_files:
+        ):
             fig_path = os.path.join("profiling_figs", fig_file + ".png")
             self.assertTrue(os.path.exists(fig_path))
         shutil.rmtree("profiling_figs")
