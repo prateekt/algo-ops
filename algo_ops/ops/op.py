@@ -8,9 +8,9 @@ from typing import Callable, List, Any, Dict, Sequence, Optional, Tuple
 import numpy as np
 
 import algo_ops.paraloop.paraloop as paraloop
+import algo_ops.plot.settings as plotting_settings
 from algo_ops.pickleable_object.pickleable_object import PickleableObject
 from algo_ops.plot.plot import plot_op_execution_time_distribution
-import algo_ops.plot.settings as plotting_settings
 
 
 class Op(ABC, PickleableObject):

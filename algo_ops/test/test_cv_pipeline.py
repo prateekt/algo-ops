@@ -5,17 +5,32 @@ import unittest
 import cv2
 import numpy as np
 
+import algo_ops.plot.settings as plotting_settings
 from algo_ops.ops.cv import CVOp
 from algo_ops.ops.text import TextOp
 from algo_ops.pipeline.cv_pipeline import CVPipeline
-import algo_ops.plot.settings as plotting_settings
 
 
 class TestCVPipeline(unittest.TestCase):
+    @staticmethod
+    def _clean_env() -> None:
+        for direc in (
+            "test_profile",
+            "cvop_results",
+            "profiling_figs",
+            "pipeline_outputs",
+        ):
+            if os.path.exists(direc):
+                shutil.rmtree(direc)
+
     def setUp(self) -> None:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         self.test_image = os.path.join(dir_path, "data", "joy_of_data.png")
         plotting_settings.SUPPRESS_PLOTS = True
+        self._clean_env()
+
+    def tearDown(self) -> None:
+        self._clean_env()
 
     @staticmethod
     def _gray_scale(img: np.array) -> np.array:
@@ -33,14 +48,6 @@ class TestCVPipeline(unittest.TestCase):
         """
         Test a single CV Op.
         """
-
-        # clear results dirs
-        if os.path.exists("test_profile"):
-            shutil.rmtree("test_profile")
-        if os.path.exists("cvop_results"):
-            shutil.rmtree("cvop_results")
-        self.assertTrue(not os.path.exists("test_profile"))
-        self.assertTrue(not os.path.exists("cvop_results"))
 
         # init and test empty state
         op = CVOp(func=self._invert_img)
@@ -81,7 +88,6 @@ class TestCVPipeline(unittest.TestCase):
         for fig_file in fig_files:
             fig_path = os.path.join("cvop_results", fig_file + ".png")
             self.assertTrue(os.path.exists(fig_path))
-        shutil.rmtree("cvop_results")
 
         # test profiling data
         self.assertEqual(len(op.execution_times), 1)
@@ -89,7 +95,6 @@ class TestCVPipeline(unittest.TestCase):
         self.assertEqual(len(os.listdir("test_profile")), 1)
         self.assertTrue(os.path.exists("test_profile"))
         self.assertTrue(os.path.exists(os.path.join("test_profile", "_invert_img.png")))
-        shutil.rmtree("test_profile")
 
     def test_cv_pipeline(self) -> None:
         """
@@ -137,11 +142,8 @@ class TestCVPipeline(unittest.TestCase):
         pipeline.save_output(out_path="pipeline_outputs")
         self.assertTrue(os.path.exists("pipeline_outputs"))
         self.assertEqual(len(os.listdir("pipeline_outputs")), 3)
-        shutil.rmtree("pipeline_outputs")
 
         # test profiling
-        if os.path.exists("profiling_figs"):
-            shutil.rmtree("profiling_figs")
         pipeline.vis_profile(profiling_figs_path="profiling_figs")
         self.assertTrue(os.path.exists("profiling_figs"))
         for fig_file in (
@@ -152,7 +154,6 @@ class TestCVPipeline(unittest.TestCase):
         ):
             fig_path = os.path.join("profiling_figs", fig_file + ".png")
             self.assertTrue(os.path.exists(fig_path))
-        shutil.rmtree("profiling_figs")
 
     def test_invalid_config(self) -> None:
         """

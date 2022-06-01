@@ -33,12 +33,13 @@ class TextOp(Op):
             if out_path.endswith(".txt"):
                 outfile = out_path
             else:
+                os.makedirs(out_path, exist_ok=True)
                 if basename is not None:
                     outfile = os.path.join(out_path, basename + "_input.txt")
                 else:
                     outfile = os.path.join(out_path, self.name + "_input.txt")
             with open(outfile, "w") as out_file:
-                out_file.write(self.input)
+                out_file.write(str(self.input))
         else:
             raise ValueError("Op " + str(self.name) + " has not executed yet.")
 
@@ -53,11 +54,12 @@ class TextOp(Op):
             if out_path.endswith(".txt"):
                 outfile = out_path
             else:
+                os.makedirs(out_path, exist_ok=True)
                 if basename is not None:
                     outfile = os.path.join(out_path, basename + ".txt")
                 else:
                     outfile = os.path.join(out_path, self.name + ".txt")
             with open(outfile, "w") as out_file:
-                out_file.write(self.output)
+                out_file.write(str(self.output))
         else:
             raise ValueError("Op " + str(self.name) + " has not executed yet.")

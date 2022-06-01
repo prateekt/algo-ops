@@ -4,9 +4,9 @@ from typing import Union, Optional, Callable
 import cv2
 import numpy as np
 
+import algo_ops.plot.settings as plotting_settings
 from algo_ops.ops.op import Op
 from algo_ops.plot.plot import pyplot_image
-import algo_ops.plot.settings as plotting_settings
 
 """
 CVOps is infrastructure to build an OpenCV pipeline as a list of

@@ -2,15 +2,35 @@ import os
 import shutil
 import unittest
 
+import algo_ops.plot.settings as plotting_settings
 from algo_ops.ops.op import Op
 from algo_ops.ops.text import TextOp
 from algo_ops.pipeline.pipeline import Pipeline
-import algo_ops.plot.settings as plotting_settings
 
 
 class TestAlgoOpsFramework(unittest.TestCase):
+    @staticmethod
+    def _clean_env() -> None:
+        for direc in (
+            "test_save_input",
+            "test_save_output",
+            "profiling_figs",
+            "saving_test",
+            "bad_pkl",
+            "test_profile",
+        ):
+            if os.path.exists(direc):
+                shutil.rmtree(direc)
+        for file in ("test.pkl", "reverse.txt", "reverse_input.txt"):
+            if os.path.exists(file):
+                os.unlink(file)
+
     def setUp(self) -> None:
         plotting_settings.SUPPRESS_PLOTS = True
+        self._clean_env()
+
+    def tearDown(self) -> None:
+        self._clean_env()
 
     # test funcs
     @staticmethod
@@ -43,7 +63,7 @@ class TestAlgoOpsFramework(unittest.TestCase):
         self.assertEqual(list(op.execution_times), [])
 
         # test with empty buffers, not much works
-        for method in [op.save_input, op.save_output, op.vis_profile]:
+        for method in (op.save_input, op.save_output, op.vis_profile):
             with self.assertRaises(ValueError):
                 method()
         op.vis_input()
@@ -63,7 +83,6 @@ class TestAlgoOpsFramework(unittest.TestCase):
         self.assertEqual(op.input, reloaded_op.input)
         self.assertEqual(op.output, reloaded_op.output)
         self.assertEqual(op.execution_times, reloaded_op.execution_times)
-        os.unlink("test.pkl")
 
         # test op execution again
         output = op.exec(inp="a")
@@ -82,13 +101,10 @@ class TestAlgoOpsFramework(unittest.TestCase):
             self.assertEqual(fin.read(), "a")
         with open("reverse_input.txt", "r") as fin:
             self.assertEqual(fin.read(), "a")
-        os.unlink("reverse.txt")
-        os.unlink("reverse_input.txt")
 
         # test op profiling
         op.vis_profile(profiling_figs_path="profiling_figs")
         self.assertTrue(os.path.exists(os.path.join("profiling_figs", "reverse.png")))
-        shutil.rmtree("profiling_figs")
 
         # test op pickle and recover state
         op.to_pickle(out_pkl_path="test.pkl")
@@ -96,7 +112,6 @@ class TestAlgoOpsFramework(unittest.TestCase):
         self.assertEqual(op.input, reloaded_op.input)
         self.assertEqual(op.output, reloaded_op.output)
         self.assertEqual(op.execution_times, reloaded_op.execution_times)
-        os.unlink("test.pkl")
 
     def test_pipeline_framework(self) -> None:
         """
@@ -161,14 +176,11 @@ class TestAlgoOpsFramework(unittest.TestCase):
                 self.assertEqual(op.output, pipeline.ops[op_names[i + 1]].input)
 
         # test pipeline save input/output
-        if os.path.exists("saving_test"):
-            shutil.rmtree("saving_test")
         with self.assertRaises(ValueError):
             pipeline.save_input()
         pipeline.save_output(out_path="saving_test")
         self.assertTrue(os.path.exists("saving_test"))
         self.assertEqual(len(os.listdir("saving_test")), 5)
-        shutil.rmtree("saving_test")
 
         # pipeline vis test
         pipeline.vis()
@@ -180,11 +192,9 @@ class TestAlgoOpsFramework(unittest.TestCase):
             "append_b",
             "reverse",
         ]
-        self.assertTrue(os.path.exists("profiling_figs"))
         for fig_file in fig_files:
             fig_path = os.path.join("profiling_figs", fig_file + ".png")
             self.assertTrue(os.path.exists(fig_path))
-        shutil.rmtree("profiling_figs")
 
         # test reloading pipeline after first and check reloaded pipeline
         reloaded_pipeline = Pipeline.load_from_pickle(pkl_path="test.pkl")
@@ -204,9 +214,6 @@ class TestAlgoOpsFramework(unittest.TestCase):
                 self.assertEqual(
                     op.output, reloaded_pipeline.ops[op_names[i + 1]].input
                 )
-
-        # clean
-        os.unlink("test.pkl")
 
     def test_parameter_fixing(self) -> None:
         """
@@ -264,7 +271,6 @@ class TestAlgoOpsFramework(unittest.TestCase):
             reloaded_pipeline = Pipeline.load_from_pickle("bad_pkl/" + inp + ".pkl")
             self.assertTrue(isinstance(reloaded_pipeline, Pipeline))
             self.assertEqual(reloaded_pipeline.input, inp)
-        shutil.rmtree("bad_pkl")
 
     def test_pipeline_of_pipelines(self) -> None:
         """
@@ -295,4 +301,37 @@ class TestAlgoOpsFramework(unittest.TestCase):
         total_pipeline.vis()
         total_pipeline.vis_profile(profiling_figs_path="test_profile")
         self.assertEqual(len(os.listdir("test_profile")), 10)
-        shutil.rmtree("test_profile")
+
+    def test_text_op_struct(self) -> None:
+        """
+        Test TextOp with struct.
+        """
+
+        class TestStruct:
+            def __init__(self, a: int):
+                self.a = a + 1
+
+            def __str__(self):
+                return str(self.a)
+
+        def f(a: int) -> TestStruct:
+            return TestStruct(a=a)
+
+        op = TextOp(func=f)
+        op.exec(inp=2)
+
+        # test save input
+        op.save_input(out_path="test_save_input")
+        test_file = os.path.join("test_save_input", "f_input.txt")
+        self.assertTrue(os.path.exists(test_file))
+        with open(test_file, "r") as fin:
+            line = fin.read()
+        self.assertEqual(line, "2")
+
+        # test save output
+        op.save_output(out_path="test_save_output")
+        test_file = os.path.join("test_save_output", "f.txt")
+        self.assertTrue(os.path.exists(test_file))
+        with open(test_file, "r") as fin:
+            line = fin.read()
+        self.assertEqual(line, "3")

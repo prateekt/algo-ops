@@ -2,12 +2,12 @@ import os
 from collections import OrderedDict
 from typing import Callable, List, Any, Dict, Union, Optional
 
+import algo_ops.plot.settings as plotting_settings
 from algo_ops.ops.op import Op
 from algo_ops.plot.plot import (
     plot_op_execution_time_distribution,
     plot_pipeline_execution_time_distribution,
 )
-import algo_ops.plot.settings as plotting_settings
 
 
 class Pipeline(Op):
@@ -199,7 +199,6 @@ class Pipeline(Op):
 
         # make figures for pipeline if needed
         if profiling_figs_path is not None:
-
             # plot execution time distribution of entire pipeline
             outfile = os.path.join(profiling_figs_path, self.name + ".png")
             plot_op_execution_time_distribution(
