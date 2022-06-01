@@ -6,6 +6,7 @@ import numpy as np
 
 from algo_ops.ops.op import Op
 from algo_ops.plot.plot import pyplot_image
+import algo_ops.plot.settings as plotting_settings
 
 """
 CVOps is infrastructure to build an OpenCV pipeline as a list of
@@ -19,9 +20,8 @@ class CVOp(Op):
     Inputs and outputs can be visualized as images.
     """
 
-    def __init__(self, func: Callable, suppress_plots: bool = False):
+    def __init__(self, func: Callable):
         super().__init__(func=func)
-        self.suppress_plots = suppress_plots
 
     def vis_input(self) -> None:
         """
@@ -31,10 +31,10 @@ class CVOp(Op):
         """
         if self.input is None:
             raise ValueError("There is no input to be visualized.")
-        if not self.suppress_plots:
-            pyplot_image(img=self.input, title=self.name)
-        else:
+        if plotting_settings.SUPPRESS_PLOTS:
             print("Plot of input suppressed: " + str(self.name))
+        else:
+            pyplot_image(img=self.input, title=self.name)
 
     def vis(self) -> None:
         """
@@ -44,10 +44,10 @@ class CVOp(Op):
         """
         if self.output is None:
             raise ValueError("There is no output to be visualized.")
-        if not self.suppress_plots:
-            pyplot_image(img=self.output, title=self.name)
-        else:
+        if plotting_settings.SUPPRESS_PLOTS:
             print("Plot of output suppressed: " + str(self.name))
+        else:
+            pyplot_image(img=self.output, title=self.name)
 
     def save_input(self, out_path: str = ".", basename: Optional[str] = None) -> None:
         """

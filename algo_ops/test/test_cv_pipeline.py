@@ -8,12 +8,14 @@ import numpy as np
 from algo_ops.ops.cv import CVOp
 from algo_ops.ops.text import TextOp
 from algo_ops.pipeline.cv_pipeline import CVPipeline
+import algo_ops.plot.settings as plotting_settings
 
 
 class TestCVPipeline(unittest.TestCase):
     def setUp(self) -> None:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         self.test_image = os.path.join(dir_path, "data", "joy_of_data.png")
+        plotting_settings.SUPPRESS_PLOTS = True
 
     @staticmethod
     def _gray_scale(img: np.array) -> np.array:
@@ -41,7 +43,7 @@ class TestCVPipeline(unittest.TestCase):
         self.assertTrue(not os.path.exists("cvop_results"))
 
         # init and test empty state
-        op = CVOp(func=self._invert_img, suppress_plots=True)
+        op = CVOp(func=self._invert_img)
         self.assertTrue(isinstance(op, CVOp))
         self.assertEqual(op.input, None)
         self.assertEqual(op.output, None)
@@ -96,7 +98,7 @@ class TestCVPipeline(unittest.TestCase):
 
         # init pipeline and check empty state
         pipeline = CVPipeline.init_from_funcs(
-            funcs=[self._gray_scale, self._invert_img], suppress_plots=True
+            funcs=[self._gray_scale, self._invert_img]
         )
         self.assertTrue(isinstance(pipeline, CVPipeline))
         self.assertEqual(pipeline.input, None)

@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 from algo_ops.ops.cv import CVOp
 from algo_ops.ops.op import Op
 from algo_ops.pipeline.pipeline import Pipeline
+import algo_ops.plot.settings as plotting_settings
 
 
 class CVPipeline(Pipeline):
@@ -14,14 +15,11 @@ class CVPipeline(Pipeline):
     auto-dashboarding of pipeline steps.
     """
 
-    def __init__(self, ops: List[CVOp], suppress_plots: bool = False):
+    def __init__(self, ops: List[CVOp]):
         super().__init__(ops=ops)
-        self.suppress_plots = suppress_plots
 
     @classmethod
-    def init_from_funcs(
-        cls, funcs: List[Callable], op_class=CVOp, suppress_plots: bool = False
-    ) -> "CVPipeline":
+    def init_from_funcs(cls, funcs: List[Callable], op_class=CVOp) -> "CVPipeline":
         """
         param funcs: List of pipeline functions that execute serially as operations in pipeline.
         param op_class: The subclass of Op that the pipeline uses
@@ -29,7 +27,7 @@ class CVPipeline(Pipeline):
         """
         assert op_class is CVOp, "Cannot use non-CVOp in CVPipeline."
         ops: List[CVOp] = [op_class(func=func) for func in funcs]
-        return cls(ops=ops, suppress_plots=suppress_plots)
+        return cls(ops=ops)
 
     def vis(
         self, num_cols: int = 4, fig_width: int = 15, fig_height: int = 6, dpi: int = 80
@@ -49,7 +47,7 @@ class CVPipeline(Pipeline):
             raise ValueError(
                 "Cannot visualize pipeline if no input data has been run through."
             )
-        if self.suppress_plots:
+        if plotting_settings.SUPPRESS_PLOTS:
             print("Plot of pipeline " + str(self.name) + " suppressed.")
             return
 
