@@ -1,8 +1,8 @@
 import os
-import shutil
 import unittest
 
 import algo_ops.plot.settings as plotting_settings
+from algo_ops.dependency.tester_util import clean_paths
 from algo_ops.ops.op import Op
 from algo_ops.ops.text import TextOp
 from algo_ops.pipeline.pipeline import Pipeline
@@ -11,19 +11,17 @@ from algo_ops.pipeline.pipeline import Pipeline
 class TestAlgoOpsFramework(unittest.TestCase):
     @staticmethod
     def _clean_env() -> None:
-        for direc in (
-            "test_save_input",
-            "test_save_output",
-            "profiling_figs",
-            "saving_test",
-            "bad_pkl",
-            "test_profile",
-        ):
-            if os.path.exists(direc):
-                shutil.rmtree(direc)
-        for file in ("test.pkl", "reverse.txt", "reverse_input.txt"):
-            if os.path.exists(file):
-                os.unlink(file)
+        clean_paths(
+            dirs=(
+                "test_save_input",
+                "test_save_output",
+                "profiling_figs",
+                "saving_test",
+                "bad_pkl",
+                "test_profile",
+            ),
+            files=("test.pkl", "reverse.txt", "reverse_input.txt"),
+        )
 
     def setUp(self) -> None:
         plotting_settings.SUPPRESS_PLOTS = True

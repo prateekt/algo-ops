@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 
 import algo_ops.plot.settings as plotting_settings
+from algo_ops.dependency.tester_util import clean_paths
 from algo_ops.ops.cv import CVOp
 from algo_ops.ops.text import TextOp
 from algo_ops.pipeline.cv_pipeline import CVPipeline
@@ -14,14 +15,9 @@ from algo_ops.pipeline.cv_pipeline import CVPipeline
 class TestCVPipeline(unittest.TestCase):
     @staticmethod
     def _clean_env() -> None:
-        for direc in (
-            "test_profile",
-            "cvop_results",
-            "profiling_figs",
-            "pipeline_outputs",
-        ):
-            if os.path.exists(direc):
-                shutil.rmtree(direc)
+        clean_paths(
+            dirs=("test_profile", "cvop_results", "profiling_figs", "pipeline_outputs")
+        )
 
     def setUp(self) -> None:
         dir_path = os.path.dirname(os.path.realpath(__file__))

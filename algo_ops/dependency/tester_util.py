@@ -1,7 +1,9 @@
 import copy
+import os
 import queue
+import shutil
 from functools import wraps
-from typing import Dict, Any, List, Sequence, Callable
+from typing import Dict, Any, List, Sequence, Callable, Optional
 
 import numpy as np
 
@@ -125,3 +127,22 @@ def iter_params(*args, **kwargs) -> Callable:
 
     # return decorated test function runner
     return decorator
+
+
+def clean_paths(
+    dirs: Optional[Sequence[str]] = None, files: Optional[Sequence[str]] = None
+) -> None:
+    """
+    Deletes directories and files.
+
+    param dirs: Directories to remove
+    param files: Files to remove
+    """
+    if dirs is not None:
+        for direc in dirs:
+            if os.path.exists(direc):
+                shutil.rmtree(direc)
+    if files is not None:
+        for file in files:
+            if os.path.exists(file):
+                os.unlink(file)
