@@ -5,9 +5,12 @@ import unittest
 from algo_ops.ops.op import Op
 from algo_ops.ops.text import TextOp
 from algo_ops.pipeline.pipeline import Pipeline
+import algo_ops.plot.settings as plotting_settings
 
 
 class TestAlgoOpsFramework(unittest.TestCase):
+    def setUp(self) -> None:
+        plotting_settings.SUPPRESS_PLOTS = True
 
     # test funcs
     @staticmethod

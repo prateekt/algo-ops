@@ -26,8 +26,6 @@ class CVOp(Op):
     def vis_input(self) -> None:
         """
         Plot current input image using pyplot (jupyter compatible)
-
-        param suppress_plot: Whether to suppress plot (helpful when running from command line)
         """
         if self.input is None:
             raise ValueError("There is no input to be visualized.")
@@ -39,8 +37,6 @@ class CVOp(Op):
     def vis(self) -> None:
         """
         Plot current output image using pyplot (jupyter compatible)
-
-        param suppress_plot: Whether to suppress plot (helpful when running from command line)
         """
         if self.output is None:
             raise ValueError("There is no output to be visualized.")

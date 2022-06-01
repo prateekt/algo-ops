@@ -10,6 +10,7 @@ import numpy as np
 import algo_ops.paraloop.paraloop as paraloop
 from algo_ops.pickleable_object.pickleable_object import PickleableObject
 from algo_ops.plot.plot import plot_op_execution_time_distribution
+import algo_ops.plot.settings as plotting_settings
 
 
 class Op(ABC, PickleableObject):
@@ -149,7 +150,7 @@ class Op(ABC, PickleableObject):
             plot_op_execution_time_distribution(
                 execution_times=list(self.execution_times),
                 op_name=self.name,
-                suppress_plot=True,
+                suppress_plot=plotting_settings.SUPPRESS_PLOTS,
                 outfile=outfile,
             )
 

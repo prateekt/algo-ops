@@ -7,6 +7,7 @@ from algo_ops.plot.plot import (
     plot_op_execution_time_distribution,
     plot_pipeline_execution_time_distribution,
 )
+import algo_ops.plot.settings as plotting_settings
 
 
 class Pipeline(Op):
@@ -204,7 +205,7 @@ class Pipeline(Op):
             plot_op_execution_time_distribution(
                 execution_times=list(self.execution_times),
                 op_name=self.name,
-                suppress_plot=True,
+                suppress_plot=plotting_settings.SUPPRESS_PLOTS,
                 outfile=outfile,
             )
 
@@ -215,6 +216,6 @@ class Pipeline(Op):
                     op.name: list(op.execution_times) for op in self.ops.values()
                 },
                 pipeline_name=self.name,
-                suppress_plot=True,
+                suppress_plot=plotting_settings.SUPPRESS_PLOTS,
                 outfile=outfile,
             )
