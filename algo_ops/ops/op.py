@@ -8,7 +8,6 @@ from typing import Callable, List, Any, Dict, Sequence, Optional, Tuple
 import numpy as np
 
 import algo_ops.paraloop.paraloop as paraloop
-import algo_ops.plot.settings as plotting_settings
 from algo_ops.pickleable_object.pickleable_object import PickleableObject
 from algo_ops.plot.plot import plot_op_execution_time_distribution
 
@@ -25,7 +24,7 @@ class Op(ABC, PickleableObject):
         """
 
         # core functionality
-        self.func: Callable = func
+        self._func: Callable = func
         self.exec_func: Callable = func
         self.name: str = func.__name__
         self.input: Optional[Any] = None
@@ -95,7 +94,7 @@ class Op(ABC, PickleableObject):
 
         param params: Dict that maps parameter name -> parameter value
         """
-        self.exec_func = functools.partial(self.func, **params)
+        self.exec_func = functools.partial(self._func, **params)
 
     @staticmethod
     def _format_execution_time_stats(
@@ -150,7 +149,6 @@ class Op(ABC, PickleableObject):
             plot_op_execution_time_distribution(
                 execution_times=list(self.execution_times),
                 op_name=self.name,
-                suppress_plot=plotting_settings.SUPPRESS_PLOTS,
                 outfile=outfile,
             )
 

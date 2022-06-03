@@ -21,7 +21,6 @@ def pyplot_image(img: np.array, title: str) -> None:
 def plot_op_execution_time_distribution(
     execution_times: List[float],
     op_name: str,
-    suppress_plot: bool = False,
     outfile: Optional[str] = None,
 ) -> None:
     """
@@ -29,7 +28,6 @@ def plot_op_execution_time_distribution(
 
     param execution_times: List of Op execution times
     param op_name: The name of the op
-    param suppress_plot: Whether to suppress plot output to screen. If Jupyter, use False.
     param outfile: File to write. If None, no file is written.
     """
 
@@ -40,13 +38,12 @@ def plot_op_execution_time_distribution(
     # make plot
     tl = "Distribution of " + op_name + " Execution Times"
     fig = ep.hist(data=execution_times, xlabel="Op Execution Time (s)", title=tl)
-    ep.plot_all(plots=fig, suppress_output=suppress_plot, outfile=outfile)
+    ep.plot_all(plots=fig, outfile=outfile)
 
 
 def plot_pipeline_execution_time_distribution(
     op_execution_times: Dict[str, List[float]],
     pipeline_name: str,
-    suppress_plot: bool = False,
     outfile: Optional[str] = None,
 ) -> None:
     """
@@ -54,7 +51,6 @@ def plot_pipeline_execution_time_distribution(
 
     param op_execution_times: Dict mapping op_name -> List of function call execution times
     param pipeline_name: The name of the pipeline
-    param suppress_plot: Whether to suppress plot output to screen. If Jupyter, use False.
     param outfile: File to write. If None, no file is written.
     """
 
@@ -75,6 +71,5 @@ def plot_pipeline_execution_time_distribution(
     ep.plot_all(
         plots=figs,
         panels=[1] * len(figs),
-        suppress_output=suppress_plot,
         outfile=outfile,
     )

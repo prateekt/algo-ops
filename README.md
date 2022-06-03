@@ -3,7 +3,7 @@
 Pipeline Infrastructure for Prototyping and Deploying Algorithms
 
 You like algorithms. But prototyping complicated algorithms can be challenging, especially when they have complicated
-architectures with many components. How do you prototype algorithms so that the data flow makes sense, the results are
+architectures with many components. How do you prototype algorithms so that the data flow is sensible, the results are
 interpretable, and the algorithm is easily debuggable on incorrect predictions?
 
 Algo-Ops has the following features:

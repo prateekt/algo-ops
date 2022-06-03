@@ -2,9 +2,9 @@ import os
 from typing import Union, Optional, Callable
 
 import cv2
+import ezplotly.settings as plotting_settings
 import numpy as np
 
-import algo_ops.plot.settings as plotting_settings
 from algo_ops.ops.op import Op
 from algo_ops.plot.plot import pyplot_image
 

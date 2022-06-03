@@ -1,11 +1,20 @@
 import os
 import unittest
 
-import algo_ops.plot.settings as plotting_settings
+import ezplotly.settings as plotting_settings
+
 from algo_ops.dependency.tester_util import clean_paths
 from algo_ops.ops.op import Op
 from algo_ops.ops.text import TextOp
 from algo_ops.pipeline.pipeline import Pipeline
+
+
+class TestStruct:
+    def __init__(self, a: int):
+        self.a = a + 1
+
+    def __str__(self):
+        return str(self.a)
 
 
 class TestAlgoOpsFramework(unittest.TestCase):
@@ -270,6 +279,9 @@ class TestAlgoOpsFramework(unittest.TestCase):
             self.assertTrue(isinstance(reloaded_pipeline, Pipeline))
             self.assertEqual(reloaded_pipeline.input, inp)
 
+        # test pickle
+        pipeline.to_pickle(out_pkl_path="test.pkl")
+
     def test_pipeline_of_pipelines(self) -> None:
         """
         Test that pipelines of pipelines work.
@@ -300,22 +312,21 @@ class TestAlgoOpsFramework(unittest.TestCase):
         total_pipeline.vis_profile(profiling_figs_path="test_profile")
         self.assertEqual(len(os.listdir("test_profile")), 10)
 
+        # test pickle
+        pipeline1.to_pickle(out_pkl_path="test.pkl")
+        pipeline2.to_pickle(out_pkl_path="test.pkl")
+        total_pipeline.to_pickle(out_pkl_path="test.pkl")
+
+    @staticmethod
+    def f(a: int) -> TestStruct:
+        return TestStruct(a=a)
+
     def test_text_op_struct(self) -> None:
         """
-        Test TextOp with struct.
+        Test TextOp with embedded TestStruct.
         """
 
-        class TestStruct:
-            def __init__(self, a: int):
-                self.a = a + 1
-
-            def __str__(self):
-                return str(self.a)
-
-        def f(a: int) -> TestStruct:
-            return TestStruct(a=a)
-
-        op = TextOp(func=f)
+        op = TextOp(func=self.f)
         op.exec(inp=2)
 
         # test save input
@@ -333,3 +344,6 @@ class TestAlgoOpsFramework(unittest.TestCase):
         with open(test_file, "r") as fin:
             line = fin.read()
         self.assertEqual(line, "3")
+
+        # test pickle
+        op.to_pickle(out_pkl_path="test.pkl")

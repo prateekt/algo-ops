@@ -3,9 +3,9 @@ import shutil
 import unittest
 
 import cv2
+import ezplotly.settings as plotting_settings
 import numpy as np
 
-import algo_ops.plot.settings as plotting_settings
 from algo_ops.dependency.tester_util import clean_paths
 from algo_ops.ops.cv import CVOp
 from algo_ops.ops.text import TextOp
@@ -16,7 +16,8 @@ class TestCVPipeline(unittest.TestCase):
     @staticmethod
     def _clean_env() -> None:
         clean_paths(
-            dirs=("test_profile", "cvop_results", "profiling_figs", "pipeline_outputs")
+            dirs=("test_profile", "cvop_results", "profiling_figs", "pipeline_outputs"),
+            files=("test.pkl",),
         )
 
     def setUp(self) -> None:
@@ -92,6 +93,9 @@ class TestCVPipeline(unittest.TestCase):
         self.assertTrue(os.path.exists("test_profile"))
         self.assertTrue(os.path.exists(os.path.join("test_profile", "_invert_img.png")))
 
+        # test pickling
+        op.to_pickle(out_pkl_path="test.pkl")
+
     def test_cv_pipeline(self) -> None:
         """
         End-to-end test example of CVPipeline.
@@ -150,6 +154,9 @@ class TestCVPipeline(unittest.TestCase):
         ):
             fig_path = os.path.join("profiling_figs", fig_file + ".png")
             self.assertTrue(os.path.exists(fig_path))
+
+        # test pickling
+        pipeline.to_pickle(out_pkl_path="test.pkl")
 
     def test_invalid_config(self) -> None:
         """

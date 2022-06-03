@@ -3,7 +3,7 @@ from typing import List, Callable
 
 from matplotlib import pyplot as plt
 
-import algo_ops.plot.settings as plotting_settings
+import ezplotly.settings as plotting_settings
 from algo_ops.ops.cv import CVOp
 from algo_ops.ops.op import Op
 from algo_ops.pipeline.pipeline import Pipeline
