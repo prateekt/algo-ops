@@ -1,9 +1,9 @@
 import math
 from typing import List, Callable
 
+import ezplotly.settings as plotting_settings
 from matplotlib import pyplot as plt
 
-import ezplotly.settings as plotting_settings
 from algo_ops.ops.cv import CVOp
 from algo_ops.ops.op import Op
 from algo_ops.pipeline.pipeline import Pipeline
