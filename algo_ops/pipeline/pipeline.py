@@ -79,10 +79,11 @@ class Pipeline(Op):
 
         param funcs: List of pipeline functions that execute serially
             as operations in pipeline.
-        param op_class: The subclass of Op that the pipeline uses
+        param op_class: The subclass of Op that the pipeline uses (or list of subclasses, one for each func).
         """
         if not isinstance(op_class, list):
             op_class = [op_class for _ in range(len(funcs))]
+        assert len(op_class) == len(funcs)
         ops: List[Op] = list()
         for i, func in enumerate(funcs):
             ops.append(op_class[i](func))

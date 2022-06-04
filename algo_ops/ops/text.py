@@ -6,8 +6,8 @@ from algo_ops.ops.op import Op
 
 class TextOp(Op):
     """
-    Represents a single text operation that can be executed. Inputs and outputs can be printed to stdout and saved to
-    text file.
+    Represents a single text operation that can be executed. Inputs and outputs are both text-based and can be
+    printed to stdout and saved to text file.
     """
 
     def vis_input(self) -> None:

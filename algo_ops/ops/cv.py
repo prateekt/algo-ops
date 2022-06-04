@@ -14,14 +14,98 @@ feed-forward ops that support op-level visualization tools and debugging.
 """
 
 
+class ImageResult:
+    """
+    Represents an image processing result.
+    """
+
+    def __init__(self, img: np.array, file_path: Optional[str] = None):
+        """
+        param img: The numpy image matrix
+        param file_path: Path to image file (if any)
+        """
+        self.img = img
+        self.file_path = file_path
+
+    def plot(self, title: str) -> None:
+        """
+        Plot image in pyplot.
+
+        param title: Title of image
+        """
+        if plotting_settings.SUPPRESS_PLOTS:
+            print("Plotting of plot is suppressed " + str(title) + ".")
+        else:
+            pyplot_image(img=self.img, title=title)
+
+    def __str__(self) -> str:
+        """
+        return:
+            str representation
+        """
+        return str(self.file_path)
+
+
 class CVOp(Op):
     """
-    Represents a single computer vision operation that can be executed.
-    Inputs and outputs can be visualized as images.
+    Represents a single computer vision operation that can be executed. Both the input and output of a CVOp are
+    images.
     """
 
     def __init__(self, func: Callable):
+        """
+        Initialize CVOp.
+
+        param func: The function executed when the CVOp is run on an input image to produce an output image
+        """
         super().__init__(func=func)
+        self.input: Optional[ImageResult] = None
+        self.output: Optional[ImageResult] = None
+
+    @staticmethod
+    def parse_input(inp: Union[str, np.array, ImageResult]) -> ImageResult:
+        """
+        Helper function to parse input and format as ImageResult.
+
+        param inp: Either a path to an image file, a numpy image matrix, or an ImageResult object.
+
+        return:
+            ImageResult Object
+        """
+        if isinstance(inp, str):
+            inp_file_path = inp
+            inp_img = cv2.imread(filename=inp_file_path)
+            inp_img = cv2.cvtColor(inp_img, cv2.COLOR_BGR2RGB)
+            input_img_result = ImageResult(img=inp_img, file_path=inp_file_path)
+        elif isinstance(inp, np.ndarray):
+            input_img_result = ImageResult(img=inp, file_path=None)
+        elif isinstance(inp, ImageResult):
+            input_img_result = inp
+        else:
+            raise ValueError("Unsupported input: " + str(inp))
+        return input_img_result
+
+    def exec(self, inp: Union[str, np.array, ImageResult]) -> ImageResult:
+        """
+        A CV operation takes in an image, performs an operation on the image, and returns a new image.
+
+        param inp: Either a path to an image file, a numpy image matrix, or an ImageResult object.
+
+        return
+            output: The output image of the operation's execution, wrapped as an ImageResult.
+        """
+
+        # parse input into ImageResult object
+        self.input = self.parse_input(inp=inp)
+
+        # run op's function on input image to obtain output image
+        input_img_result = self.input
+        output_img = super().exec(inp=self.input.img)
+        self.input = input_img_result
+
+        # return output wrapped as ImageResult
+        self.output = ImageResult(img=output_img, file_path=self.input.file_path)
+        return self.output
 
     def vis_input(self) -> None:
         """
@@ -29,10 +113,8 @@ class CVOp(Op):
         """
         if self.input is None:
             raise ValueError("There is no input to be visualized.")
-        if plotting_settings.SUPPRESS_PLOTS:
-            print("Plot of input suppressed: " + str(self.name))
         else:
-            pyplot_image(img=self.input, title=self.name)
+            self.input.plot(title=self.name)
 
     def vis(self) -> None:
         """
@@ -40,10 +122,8 @@ class CVOp(Op):
         """
         if self.output is None:
             raise ValueError("There is no output to be visualized.")
-        if plotting_settings.SUPPRESS_PLOTS:
-            print("Plot of output suppressed: " + str(self.name))
         else:
-            pyplot_image(img=self.output, title=self.name)
+            self.output.plot(title=self.name)
 
     def save_input(self, out_path: str = ".", basename: Optional[str] = None) -> None:
         """
@@ -61,7 +141,7 @@ class CVOp(Op):
                     outfile = os.path.join(out_path, basename + "_input.png")
                 else:
                     outfile = os.path.join(out_path, self.name + "_input.png")
-            cv2.imwrite(outfile, self.input)
+            cv2.imwrite(outfile, self.input.img)
         else:
             raise ValueError("Op " + str(self.name) + " has not executed yet.")
 
@@ -81,23 +161,6 @@ class CVOp(Op):
                     outfile = os.path.join(out_path, basename + ".png")
                 else:
                     outfile = os.path.join(out_path, self.name + ".png")
-            cv2.imwrite(outfile, self.output)
+            cv2.imwrite(outfile, self.output.img)
         else:
             raise ValueError("Op " + str(self.name) + " has not executed yet.")
-
-    def exec(self, inp: Union[np.array, str]) -> np.array:
-        """
-        A CV op takes in either the file name of an image or an image,
-        performs an operation on the image, and returns as new image.
-
-        param inp: The input
-
-        return
-            output: The result of the operation
-        """
-        if isinstance(inp, str):
-            inp = cv2.imread(filename=inp)
-            inp = cv2.cvtColor(inp, cv2.COLOR_BGR2RGB)
-        if not isinstance(inp, np.ndarray):
-            raise ValueError("Unsupported Input: " + str(inp))
-        return super().exec(inp=inp)
