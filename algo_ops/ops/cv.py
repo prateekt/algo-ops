@@ -38,6 +38,20 @@ class ImageResult:
         else:
             pyplot_image(img=self.img, title=title)
 
+    def save(self, out_path: str = ".", basename: Optional[str] = None):
+        """
+        Saves current input image to file.
+
+        param out_path: Path to where file should be saved.
+        param basename: Basename of file
+        """
+        if out_path.endswith(".png"):
+            outfile = out_path
+        else:
+            os.makedirs(out_path, exist_ok=True)
+            outfile = os.path.join(out_path, basename + ".png")
+        cv2.imwrite(outfile, self.img)
+
     def __str__(self) -> str:
         """
         return:
@@ -133,17 +147,12 @@ class CVOp(Op):
         param basename: Basename of file
         """
         if self.input is not None:
-            if out_path.endswith(".png"):
-                outfile = out_path
-            else:
-                os.makedirs(out_path, exist_ok=True)
-                if basename is not None:
-                    outfile = os.path.join(out_path, basename + "_input.png")
-                else:
-                    outfile = os.path.join(out_path, self.name + "_input.png")
-            cv2.imwrite(outfile, self.input.img)
+            if basename is None:
+                basename = self.name
+            basename += "_input"
+            self.input.save(out_path=out_path, basename=basename)
         else:
-            raise ValueError("Op " + str(self.name) + " has not executed yet.")
+            raise ValueError("There is no input to be saved.")
 
     def save_output(self, out_path: str = ".", basename: Optional[str] = None) -> None:
         """
@@ -153,14 +162,8 @@ class CVOp(Op):
         param basename: Basename of file
         """
         if self.output is not None:
-            if out_path.endswith(".png"):
-                outfile = out_path
-            else:
-                os.makedirs(out_path, exist_ok=True)
-                if basename is not None:
-                    outfile = os.path.join(out_path, basename + ".png")
-                else:
-                    outfile = os.path.join(out_path, self.name + ".png")
-            cv2.imwrite(outfile, self.output.img)
+            if basename is None:
+                basename = self.name
+            self.output.save(out_path=out_path, basename=basename)
         else:
-            raise ValueError("Op " + str(self.name) + " has not executed yet.")
+            raise ValueError("There is no output to be saved.")
