@@ -351,6 +351,9 @@ class TestAlgoOpsFramework(unittest.TestCase):
         op.to_pickle(out_pkl_path="test.pkl")
 
     def test_debug_mode(self) -> None:
+        """
+        Test that debug mode prints out stuff.
+        """
         settings.DEBUG_MODE = True
         op = TextOp(func=self.reverse)
         op.exec("aabb")
