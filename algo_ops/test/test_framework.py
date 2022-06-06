@@ -7,6 +7,7 @@ from algo_ops.dependency.tester_util import clean_paths
 from algo_ops.ops.op import Op
 from algo_ops.ops.text import TextOp
 from algo_ops.pipeline.pipeline import Pipeline
+import algo_ops.ops.settings as settings
 
 
 class TestStruct:
@@ -34,6 +35,7 @@ class TestAlgoOpsFramework(unittest.TestCase):
 
     def setUp(self) -> None:
         plotting_settings.SUPPRESS_PLOTS = True
+        settings.DEBUG_MODE = False
         self._clean_env()
 
     def tearDown(self) -> None:
@@ -347,3 +349,14 @@ class TestAlgoOpsFramework(unittest.TestCase):
 
         # test pickle
         op.to_pickle(out_pkl_path="test.pkl")
+
+    def test_debug_mode(self) -> None:
+        settings.DEBUG_MODE = True
+        op = TextOp(func=self.reverse)
+        op.exec("aabb")
+        pipeline = Pipeline.init_from_funcs(
+            funcs=[self.append_a, self.reverse, self.reverse],
+            op_class=TextOp,
+        )
+        pipeline.name = "TEST_PIPELINE"
+        pipeline.exec("test")

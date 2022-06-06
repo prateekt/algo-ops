@@ -8,6 +8,7 @@ from typing import Callable, List, Any, Dict, Sequence, Optional, Tuple
 import numpy as np
 
 import algo_ops.paraloop.paraloop as paraloop
+import algo_ops.ops.settings as settings
 from algo_ops.pickleable_object.pickleable_object import PickleableObject
 from algo_ops.plot.plot import plot_op_execution_time_distribution
 
@@ -46,12 +47,22 @@ class Op(ABC, PickleableObject):
         return
             output: The result of the executing the operation
         """
+        if settings.DEBUG_MODE:
+            print("Executing Op: " + str(self.name))
         self.input = inp
         t0 = time.time()
         self.output = self.exec_func(inp)
         tf = time.time()
         elapsed_time = tf - t0
         self.execution_times.append(elapsed_time)
+        if settings.DEBUG_MODE:
+            print(
+                "Op Executed: "
+                + str(self.name)
+                + ", "
+                + str(round(elapsed_time, 3))
+                + "s"
+            )
         return self.output
 
     @abstractmethod
