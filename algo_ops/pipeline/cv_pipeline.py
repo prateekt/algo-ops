@@ -1,10 +1,11 @@
 import math
-from typing import List, Callable
+from typing import List, Callable, Union, Optional
 
 import ezplotly.settings as plotting_settings
+import numpy as np
 from matplotlib import pyplot as plt
 
-from algo_ops.ops.cv import CVOp
+from algo_ops.ops.cv import CVOp, ImageResult
 from algo_ops.ops.op import Op
 from algo_ops.pipeline.pipeline import Pipeline
 
@@ -17,6 +18,8 @@ class CVPipeline(Pipeline):
 
     def __init__(self, ops: List[CVOp]):
         super().__init__(ops=ops)
+        self.input: Optional[ImageResult] = None
+        self.output: Optional[ImageResult] = None
 
     @classmethod
     def init_from_funcs(cls, funcs: List[Callable], op_class=CVOp) -> "CVPipeline":
@@ -28,6 +31,29 @@ class CVPipeline(Pipeline):
         assert op_class is CVOp, "Cannot use non-CVOp in CVPipeline."
         ops: List[CVOp] = [op_class(func=func) for func in funcs]
         return cls(ops=ops)
+
+    def exec(self, inp: Union[str, np.array, ImageResult]) -> ImageResult:
+        """
+        Override pipeline exec so always operates on ImageResult.
+
+        param inp: Either a path to an image file, a numpy image matrix, or an ImageResult object.
+
+        return:
+            ImageResult
+        """
+
+        # parse input into ImageResult object
+        input_img_result = CVOp.parse_input(inp=inp)
+        self.input = input_img_result
+
+        # run pipeline on input to produce output
+        output_img_result = super().exec(inp=self.input)
+        assert isinstance(output_img_result, ImageResult)
+        self.input = input_img_result
+        self.output = output_img_result
+
+        # return
+        return output_img_result
 
     def vis(
         self, num_cols: int = 4, fig_width: int = 15, fig_height: int = 6, dpi: int = 80

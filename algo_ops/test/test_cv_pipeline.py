@@ -7,7 +7,7 @@ import ezplotly.settings as plotting_settings
 import numpy as np
 
 from algo_ops.dependency.tester_util import clean_paths
-from algo_ops.ops.cv import CVOp
+from algo_ops.ops.cv import CVOp, ImageResult
 from algo_ops.ops.text import TextOp
 from algo_ops.pipeline.cv_pipeline import CVPipeline
 
@@ -66,12 +66,15 @@ class TestCVPipeline(unittest.TestCase):
 
         # test that Op executes as expected and matches manual call to function
         output = op.exec(inp=self.test_image)
+        self.assertTrue(isinstance(op.input, ImageResult))
+        self.assertTrue(isinstance(op.output, ImageResult))
+        self.assertEqual(op.output, output)
         original_inp = cv2.imread(filename=self.test_image)
         original_inp = cv2.cvtColor(original_inp, cv2.COLOR_BGR2RGB)
         manual_output = self._invert_img(original_inp)
-        self.assertTrue(np.array_equal(output, manual_output))
-        self.assertTrue(np.array_equal(op.output, manual_output))
-        self.assertTrue(np.array_equal(op.input, original_inp))
+        self.assertTrue(np.array_equal(output.img, manual_output))
+        self.assertTrue(np.array_equal(op.output.img, manual_output))
+        self.assertTrue(np.array_equal(op.input.img, original_inp))
 
         # test vis (with plots suppressed)
         op.vis_input()
@@ -120,12 +123,16 @@ class TestCVPipeline(unittest.TestCase):
 
         # test that pipeline output matches stacking functions manually
         pipeline_output = pipeline.exec(inp=self.test_image)
+        self.assertTrue(isinstance(pipeline.input, ImageResult))
+        self.assertTrue(isinstance(pipeline.output, ImageResult))
+        self.assertTrue(isinstance(pipeline_output, ImageResult))
+        self.assertEqual(pipeline.output, pipeline_output)
         original_inp = cv2.imread(filename=self.test_image)
         original_inp = cv2.cvtColor(original_inp, cv2.COLOR_BGR2RGB)
         manual_output = self._invert_img(self._gray_scale(original_inp))
-        self.assertTrue(np.array_equal(pipeline_output, manual_output))
-        self.assertTrue(np.array_equal(pipeline.output, manual_output))
-        self.assertTrue(np.array_equal(pipeline.input, self.test_image))
+        self.assertTrue(np.array_equal(pipeline_output.img, manual_output))
+        self.assertTrue(np.array_equal(pipeline.output.img, manual_output))
+        self.assertTrue(np.array_equal(pipeline.input.file_path, self.test_image))
 
         # test vis (with plots suppressed)
         with self.assertRaises(ValueError):
