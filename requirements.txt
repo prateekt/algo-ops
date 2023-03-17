@@ -1,8 +1,8 @@
 matplotlib
 numpy
-opencv-python-headless==4.5.4.60
+opencv-python-headless
 ezplotly
 natsort
-nose
+nose2
 black
 twine

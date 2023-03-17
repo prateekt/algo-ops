@@ -12,4 +12,4 @@ deploy:
 	twine upload dist/*
 
 test:
-	nosetests
+	nose2
