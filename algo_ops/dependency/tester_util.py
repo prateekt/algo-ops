@@ -82,15 +82,12 @@ def iter_params(*args, **kwargs) -> Callable:
     """
 
     def decorator(test_function: Callable) -> Callable:
-
         # wraps decorator is necessary so original function name is passed to nose tests / pytest.
         @wraps(test_function)
         def wrapper(*args1, **kwargs1) -> None:
-
             # loop over parameters of function
             all_settings = enumerate_settings(kwargs)
             for i, setting in enumerate(all_settings):
-
                 # automatically run setUp() function of test class (if specified) before running function with each
                 # parameter setting. Note that we can skip the first setUp() since UnitTest will run it natively.
                 if len(args1) == 0:
