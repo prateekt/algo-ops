@@ -169,6 +169,9 @@ class Op(ABC, PickleableObject):
         Returns true if function, when run on input, yielded correct result.
         If false, pickles, op state to file, if pickle path is specified.
 
+        Note: The implementation of this function requires that eval_func is set to None before pickling.
+        This is because the eval_func is not pickleable.
+
         param inp: Op input
         """
         result = self.exec(inp=inp)
@@ -177,7 +180,10 @@ class Op(ABC, PickleableObject):
             inp = inp.replace("/", "_")
         if not correct and self.incorrect_pkl_path is not None:
             outfile = os.path.join(self.incorrect_pkl_path, str(inp) + ".pkl")
+            temp_eval_func = self.eval_func
+            self.eval_func = None
             self.to_pickle(out_pkl_path=outfile)
+            self.eval_func = temp_eval_func
         return result, correct
 
     def evaluate(
