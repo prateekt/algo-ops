@@ -61,11 +61,11 @@ def plot_pipeline_execution_time_distribution(
     # make fig
     figs: List[EZPlotlyPlot] = list()
     for op_name in op_execution_times:
-        xlabel = op_name
-        ylabel = "Execution Time (s)"
+        x_label = op_name
+        y_label = "Execution Time (s)"
         title = pipeline_name + " Op Execution Times"
         op_violin = ep.violin(
-            y=op_execution_times[op_name], xlabel=xlabel, ylabel=ylabel, title=title
+            y=op_execution_times[op_name], xlabel=x_label, ylabel=y_label, title=title
         )
         figs.append(op_violin)
     ep.plot_all(

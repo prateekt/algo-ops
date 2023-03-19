@@ -166,7 +166,7 @@ class Op(ABC, PickleableObject):
     def _embedded_eval(self, inp: Any) -> Tuple[Any, bool]:
         """
         Helper function to embed evaluation and prediction in same function.
-        Returns true if function, when run on input, yielded correct result.
+        Returns true if the function, when run on input, yielded correct result.
         If false, pickles, op state to file, if pickle path is specified.
 
         Note: The implementation of this function requires that eval_func is set to None before pickling.

@@ -136,9 +136,9 @@ def clean_paths(
     param files: Files to remove
     """
     if dirs is not None:
-        for direc in dirs:
-            if os.path.exists(direc):
-                shutil.rmtree(direc)
+        for directory in dirs:
+            if os.path.exists(directory):
+                shutil.rmtree(directory)
     if files is not None:
         for file in files:
             if os.path.exists(file):

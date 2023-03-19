@@ -71,7 +71,7 @@ class TestAlgoOpsFramework(unittest.TestCase):
         self.assertEqual(op.output, None)
         self.assertEqual(list(op.execution_times), [])
 
-        # test with empty buffers, not much works
+        # test with empty buffers; not much such work.
         for method in (op.save_input, op.save_output, op.vis_profile):
             with self.assertRaises(ValueError):
                 method()

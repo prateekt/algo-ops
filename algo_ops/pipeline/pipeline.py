@@ -62,11 +62,11 @@ class Pipeline(Op):
         param ops: List of ops in the pipeline
         """
         super().__init__(func=self._run)
-        self.ops = OrderedDict()
+        self.ops: Dict[str, Op] = OrderedDict()
         for i, op in enumerate(ops):
             assert isinstance(op, Op)
             self.ops[self._pipeline_op_name(op=op)] = op
-        self.name = self._pipeline_name(pipeline_ops=self.ops.values())
+        self.name = self._pipeline_name(pipeline_ops=list(self.ops.values()))
 
     @classmethod
     def init_from_funcs(

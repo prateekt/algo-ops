@@ -9,8 +9,8 @@ class PickleableObject:
 
         param out_pkl_path: Path to output pickle file.
         """
-        with open(out_pkl_path, "wb") as fout:
-            pickle.dump(self, fout)
+        with open(out_pkl_path, "wb") as out:
+            pickle.dump(self, out)
         assert os.path.exists(out_pkl_path)
 
     @classmethod

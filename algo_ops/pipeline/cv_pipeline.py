@@ -13,7 +13,7 @@ from algo_ops.pipeline.pipeline import Pipeline
 class CVPipeline(Pipeline):
     """
     Implementation of an OpenCV Image Processing pipeline in the algo_ops framework that allows
-    auto-dashboarding of pipeline steps.
+    automatic dash-boarding of pipeline steps.
     """
 
     def __init__(self, ops: List[CVOp]):

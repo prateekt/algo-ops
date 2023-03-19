@@ -85,7 +85,7 @@ def is_video_file(file_path: str) -> bool:
 
 def get_image_files(images_dir: str) -> List[str]:
     """
-    Get image paths for images in an images directory.
+    Get image paths for images in an image's directory.
 
     param images_dir: The images directory
 
