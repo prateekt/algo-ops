@@ -24,7 +24,7 @@ class ImageResult:
         param img: The numpy image matrix
         param file_path: Path to image file (if any)
         """
-        self.img = img
+        self.img: Optional[np.array] = img
         self.file_path = file_path
 
     def plot(self, title: str) -> None:
@@ -35,6 +35,8 @@ class ImageResult:
         """
         if plotting_settings.SUPPRESS_PLOTS:
             print("Plotting of plot is suppressed " + str(title) + ".")
+        elif self.img is None:
+            print("No image to plot since self.img is None.")
         else:
             pyplot_image(img=self.img, title=title)
 
@@ -50,7 +52,10 @@ class ImageResult:
         else:
             os.makedirs(out_path, exist_ok=True)
             outfile = os.path.join(out_path, basename + ".png")
-        cv2.imwrite(outfile, self.img)
+        if self.img is not None:
+            cv2.imwrite(outfile, self.img)
+        else:
+            print("No image to save since self.img is None.")
 
     def __str__(self) -> str:
         """
