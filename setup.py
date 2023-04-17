@@ -7,7 +7,7 @@ with open("requirements.txt") as f:
 
 setuptools.setup(
     name="algo-ops",
-    version="0.0.1.6.9",
+    version="0.0.1.7.0.1",
     author="Prateek Tandon",
     author_email="prateek1.tandon@gmail.com",
     description="Algo-Ops Algorithm Prototyping Framework",
