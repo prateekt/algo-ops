@@ -1,6 +1,24 @@
 [build-system]
-requires = [
-    "hatchling",
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "algo-ops"
+version = "0.0.1.7.0.7"
+authors = [
+  { name="Prateek Tandon", email="prateek1.tandon@gmail.com" },
+]
+description = "Algo-Ops Framework"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11.4"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "hatch",
     "matplotlib",
     "numpy",
     "opencv-python-headless",
@@ -9,23 +27,12 @@ requires = [
     "blosc",
     "nose2",
     "black",
-    "twine"
 ]
-build-backend = "hatchling.build"
 
-[project]
-name = "algo-ops"
-version = "0.0.1.7.0.5"
-authors = [
-  { name="Prateek Tandon", email="prateek1.tandon@gmail.com" },
-]
-description = "Algo-Ops Framework"
-readme = "README.md"
-requires-python = ">=3.11.4"
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "/.github",
+    "/.gitignore",
 ]
 
 [project.urls]

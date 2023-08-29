@@ -9,6 +9,6 @@ dependencies:
     - ezplotly
     - natsort
     - blosc
+    - hatch
     - nose2
     - black
-    - twine
