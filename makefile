@@ -6,9 +6,11 @@ build:
 	rm -rf dist
 	rm -rf build
 	rm -rf algo_ops.egg*
-	python setup.py sdist bdist_wheel
+	python3 -m pip install --upgrade build
+	python3 -m build
 
 deploy:
+	python3 -m pip install --upgrade twine
 	twine upload dist/*
 
 test:
