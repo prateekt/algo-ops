@@ -1,11 +1,30 @@
 [build-system]
 requires = [
-    "setuptools>=42",
-    "wheel",
+    "hatchling",
     "matplotlib",
     "numpy",
     "opencv-python-headless",
     'ezplotly',
-    'natsort'
+    'natsort',
+    "blosc",
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "hatchling.build"
+
+[project]
+name = "algo-ops"
+version = "0.0.1.7.0.4"
+authors = [
+  { name="Prateek Tandon", email="prateek1.tandon@gmail.com" },
+]
+description = "Algo-Ops Framework"
+readme = "README.md"
+requires-python = ">=3.11.4"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/prateekt/algo-ops"
+"Bug Tracker" = "https://github.com/prateekt/algo-ops/issues"

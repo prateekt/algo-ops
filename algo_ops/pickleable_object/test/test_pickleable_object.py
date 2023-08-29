@@ -1,6 +1,7 @@
 import os
 import unittest
 
+from algo_ops.dependency.tester_util import iter_params
 from algo_ops.pickleable_object.pickleable_object import PickleableObject
 
 
@@ -38,4 +39,23 @@ class TestPickleableObject(unittest.TestCase):
         self.assertTrue(test_obj is not loaded_obj)
         self.assertEqual(test_obj.a, loaded_obj.a)
         self.assertEqual(loaded_obj.a, 3)
+        os.unlink(pkl_path)
+
+    @iter_params(compression=[None, "gzip", "bz2", "lzma", "blosc"])
+    def test_compression(self, compression: str) -> None:
+        """
+        Tests compression functions of PickleableObject.
+        """
+        test_obj = PklTestClass()
+        pkl_path = "pkl3_test.pkl"
+        self.assertEqual(test_obj.a, 2)
+        self.assertTrue(not os.path.exists(pkl_path))
+        test_obj.to_pickle(out_pkl_path=pkl_path, compression=compression)
+        self.assertTrue(os.path.exists(pkl_path))
+        loaded_obj = PklTestClass.load_from_pickle(
+            pkl_path=pkl_path, compression=compression
+        )
+        self.assertTrue(test_obj is not loaded_obj)
+        self.assertEqual(test_obj.a, loaded_obj.a)
+        self.assertEqual(loaded_obj.a, 2)
         os.unlink(pkl_path)

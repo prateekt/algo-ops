@@ -3,6 +3,7 @@ numpy
 opencv-python-headless
 ezplotly
 natsort
+blosc
 nose2
 black
 twine
