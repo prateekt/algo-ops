@@ -30,16 +30,18 @@ class TestCVPipeline(unittest.TestCase):
         self._clean_env()
 
     @staticmethod
-    def _gray_scale(img: np.array) -> np.array:
+    def _gray_scale(inp: ImageResult) -> ImageResult:
         # convert to gray scale
+        img = inp.img
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        return gray
+        return ImageResult(img=gray, file_path=inp.file_path, cmap="gray")
 
     @staticmethod
-    def _invert_img(img: np.array) -> np.array:
+    def _invert_img(inp: ImageResult) -> ImageResult:
         # invert so white text becomes black
+        img = inp.img
         inv_img = cv2.bitwise_not(img)
-        return inv_img
+        return ImageResult(img=inv_img, file_path=inp.file_path, cmap="gray")
 
     def test_cv_op(self) -> None:
         """
@@ -70,11 +72,12 @@ class TestCVPipeline(unittest.TestCase):
         self.assertTrue(isinstance(op.output, ImageResult))
         self.assertEqual(op.output, output)
         original_inp = cv2.imread(filename=self.test_image)
-        original_inp = cv2.cvtColor(original_inp, cv2.COLOR_BGR2RGB)
+        original_inp = ImageResult(img=cv2.cvtColor(original_inp, cv2.COLOR_BGR2RGB), file_path=self.test_image,
+                                   cmap="gray")
         manual_output = self._invert_img(original_inp)
-        self.assertTrue(np.array_equal(output.img, manual_output))
-        self.assertTrue(np.array_equal(op.output.img, manual_output))
-        self.assertTrue(np.array_equal(op.input.img, original_inp))
+        self.assertTrue(np.array_equal(output.img, manual_output.img))
+        self.assertTrue(np.array_equal(op.output.img, manual_output.img))
+        self.assertTrue(np.array_equal(op.input.img, original_inp.img))
 
         # test vis (with plots suppressed)
         op.vis_input()
@@ -128,10 +131,11 @@ class TestCVPipeline(unittest.TestCase):
         self.assertTrue(isinstance(pipeline_output, ImageResult))
         self.assertEqual(pipeline.output, pipeline_output)
         original_inp = cv2.imread(filename=self.test_image)
-        original_inp = cv2.cvtColor(original_inp, cv2.COLOR_BGR2RGB)
+        original_inp = ImageResult(img=cv2.cvtColor(original_inp, cv2.COLOR_BGR2RGB), file_path=self.test_image,
+                                   cmap=None)
         manual_output = self._invert_img(self._gray_scale(original_inp))
-        self.assertTrue(np.array_equal(pipeline_output.img, manual_output))
-        self.assertTrue(np.array_equal(pipeline.output.img, manual_output))
+        self.assertTrue(np.array_equal(pipeline_output.img, manual_output.img))
+        self.assertTrue(np.array_equal(pipeline.output.img, manual_output.img))
         self.assertTrue(np.array_equal(pipeline.input.file_path, self.test_image))
 
         # test vis (with plots suppressed)
