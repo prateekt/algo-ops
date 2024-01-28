@@ -19,13 +19,14 @@ class ImageResult:
     Represents an image processing result.
     """
 
-    def __init__(self, img: np.array, file_path: Optional[str] = None):
+    def __init__(self, img: np.array, file_path: Optional[str] = None, cmap: Optional[str] = None):
         """
         param img: The numpy image matrix
         param file_path: Path to image file (if any)
         """
         self.img: Optional[np.array] = img
         self.file_path = file_path
+        self.cmap = cmap
 
     def plot(self, title: str) -> None:
         """
@@ -38,7 +39,7 @@ class ImageResult:
         elif self.img is None:
             print("No image to plot since self.img is None.")
         else:
-            pyplot_image(img=self.img, title=title)
+            pyplot_image(img=self.img, title=title, cmap=cmap)
 
     def save(self, out_path: str = ".", basename: Optional[str] = None):
         """
@@ -119,11 +120,11 @@ class CVOp(Op):
 
         # run op's function on input image to obtain output image
         input_img_result = self.input
-        output_img = super().exec(inp=self.input.img)
+        output_img_result = super().exec(inp=self.input)
         self.input = input_img_result
 
         # return output wrapped as ImageResult
-        self.output = ImageResult(img=output_img, file_path=self.input.file_path)
+        self.output = output_img_result
         return self.output
 
     def vis_input(self) -> None:

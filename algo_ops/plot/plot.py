@@ -7,14 +7,14 @@ from ezplotly import EZPlotlyPlot
 from matplotlib import pyplot as plt
 
 
-def pyplot_image(img: np.array, title: str) -> None:
+def pyplot_image(img: np.array, title: str, cmap: Optional[str] = None) -> None:
     """
     Helper function to plot image using pyplot.
 
     param img: Image to plot
     param title: Image title
     """
-    plt.imshow(img)
+    plt.imshow(img, cmap=cmap)
     plt.title(title)
 
 
