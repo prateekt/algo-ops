@@ -39,7 +39,7 @@ class ImageResult:
         elif self.img is None:
             print("No image to plot since self.img is None.")
         else:
-            pyplot_image(img=self.img, title=title, cmap=cmap)
+            pyplot_image(img=self.img, title=title, cmap=self.cmap)
 
     def save(self, out_path: str = ".", basename: Optional[str] = None):
         """

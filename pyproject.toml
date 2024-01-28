@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "algo-ops"
-version = "0.0.1.7.0.7"
+version = "0.0.1.7.1"
 authors = [
   { name="Prateek Tandon", email="prateek1.tandon@gmail.com" },
 ]
